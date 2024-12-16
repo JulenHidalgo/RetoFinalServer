@@ -18,31 +18,23 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author 2dam
  */
 @Entity
-@Table(name="event" , schema="nocturna")
+@Table(name="artist" , schema="nocturna")
 @XmlRootElement
 public class Artist implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long idArtista;
+    private Integer idArtista;
     private String nombre;
     private String tipoMusica;
     private String descripcion;
 
-    public Long getId() {
+    public Integer getId() {
         return idArtista;
     }
 
-    public void setId(Long idArtista) {
-        this.idArtista = idArtista;
-    }
-
-    public Long getIdArtista() {
-        return idArtista;
-    }
-
-    public void setIdArtista(Long idArtista) {
+    public void setId(Integer idArtista) {
         this.idArtista = idArtista;
     }
 
