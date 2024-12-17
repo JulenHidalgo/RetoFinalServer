@@ -45,6 +45,14 @@ public class Club implements Serializable {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "club")
     private Set<Event> events;
 
+    public Set<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<Event> events) {
+        this.events = events;
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
