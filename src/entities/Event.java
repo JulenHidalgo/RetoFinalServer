@@ -33,27 +33,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Event implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Long id;
-    private String nombre;
-    private Date fecha;
-    private int NumEntradas;
-    private int consumicion;
-    private Double precioEntrada;
-    private Club club; 
-    private Set artists;
-    private Set tickets;
-
-    public Event(String nombre, Date fecha, int NumEntradas, int consumicion, Double precioEntrada) {
-        this.nombre = "";
-        this.fecha = valueOf(LocalDate.now());
-        this.NumEntradas = 0;
-        this.consumicion = 0;
-        this.precioEntrada = 0.0;
-    }
- 
     
-    @GeneratedValue(strategy = GenerationType.AUTO)
+     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
+    private Long id;
+    private String nombre = "";
+    @Temporal(javax.persistence.TemporalType.DATE)
+    @Future
+    private Date fecha = valueOf(LocalDate.now());
+    private Integer NumEntradas = 0;
+    private Integer consumicion = 0;
+    private Double precioEntrada = 0.0;
+    @ManyToOne
+    @JoinColumn(name="club")
+    private Club club; 
+    @ManyToMany(mappedBy="events")
+    private Set artists;
+    @OneToMany(mappedBy="event")
+    private Set tickets;
+    
+    /**
+     * Constructor vacio
+     */
+    public Event() {
+    }
+    
     public Long getId() {
         return id;
     }
@@ -70,8 +74,7 @@ public class Event implements Serializable {
         this.nombre = nombre;
     }
     
-    @Temporal(javax.persistence.TemporalType.DATE)
-    @Future
+    
     public Date getFecha() {
         return fecha;
     }
@@ -103,25 +106,31 @@ public class Event implements Serializable {
     public void setPrecioEntrada(Double precioEntrada) {
         this.precioEntrada = precioEntrada;
     }
-    
-    
-    @ManyToOne
-    @JoinColumn(name="club")
+ 
     public Club getClub(){
-       return  this.club;
-        
+       return  this.club;    
+    }
+
+    public void setClub(Club club) {
+        this.club = club;
     }
     
-    @ManyToMany(mappedBy="events")
+
     public Set getArtits(){
-       return  this.artists;
-        
+       return  this.artists;     
+    }
+
+    public void setArtists(Set artists) {
+        this.artists = artists;
     }
     
-    @OneToMany(mappedBy="ticket")
     public Set getTickets(){
        return  this.tickets;
         
+    }
+
+    public void setTickets(Set tickets) {
+        this.tickets = tickets;
     }
     
     @Override
