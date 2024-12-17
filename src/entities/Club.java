@@ -6,11 +6,15 @@
 package entities;
 
 import java.io.Serializable;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -26,10 +30,20 @@ public class Club implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    @NotNull
     private String nombre;
+    
+    @NotNull
     private String ubicacion;
+    
+    @NotNull
     private String ciudad;
+    
     private String instagram;
+    
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "club")
+    private Set<Event> events;
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
@@ -66,6 +80,13 @@ public class Club implements Serializable {
     public Long getId() {
         return id;
     }
+    
+    public Club() {
+        this.nombre = "";
+        this.ubicacion = "";
+        this.ciudad = "";
+        this.instagram = "";
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -93,7 +114,7 @@ public class Club implements Serializable {
 
     @Override
     public String toString() {
-        return "Club{" + "id=" + id + ", nombre=" + nombre + ", ubicacion=" + ubicacion + ", ciudad=" + ciudad + ", instagram=" + instagram + '}';
+        return this.nombre;
     }
 
     
