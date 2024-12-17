@@ -31,22 +31,17 @@ public class Artist implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NotNull
-    protected String nombre;
+    protected String nombre = "";
     @NotNull
-    protected String tipoMusica;
-    protected String descripcion;
+    protected String tipoMusica = "";
+    protected String descripcion = "";
     
     @ManyToMany
     @JoinTable(name="artist_event")
     protected Set events;
 
     public Artist() {
-    }
-
-    public Artist(String nombre, String tipoMusica, String descripcion) {
-        this.nombre = "";
-        this.tipoMusica = "";
-        this.descripcion = "";
+        
     }
 
     public Long getId() {
@@ -81,8 +76,12 @@ public class Artist implements Serializable {
         this.descripcion = descripcion;
     }
     
-    protected Set getEvents(){
+    public Set getEvents(){
         return events;
+    }
+    
+    public void getEvents(Set events){
+        this.events = events;
     }
     
     @Override
