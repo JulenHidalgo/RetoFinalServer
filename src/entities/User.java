@@ -15,7 +15,9 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -23,6 +25,8 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table(name="user" , schema="nocturna")
+@XmlRootElement
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;

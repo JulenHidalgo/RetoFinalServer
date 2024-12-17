@@ -8,14 +8,18 @@ package entities;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import javax.xml.bind.annotation.XmlRootElement;
 /**
  *
  * @author 2dam
  */
 @Entity
+@Table(name="client" , schema="nocturna")
+@XmlRootElement
 public class Client extends User implements Serializable {
    
     @NotNull

@@ -5,6 +5,7 @@
  */
 package entities;
 
+import data.FormaPago;
 import java.io.Serializable;
 import static java.sql.Date.valueOf;
 import java.time.LocalDate;
@@ -15,13 +16,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author 2dam
  */
 @Entity
+@Table(name="ticket" , schema="nocturna")
+@XmlRootElement
 public class Ticket implements Serializable {
 
     private static final long serialVersionUID = 1L;

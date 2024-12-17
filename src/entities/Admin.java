@@ -7,12 +7,16 @@ package entities;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author 2dam
  */
 @Entity
+@Table(name="admin" , schema="nocturna")
+@XmlRootElement
 public class Admin extends User implements Serializable {
 
     private String departamento;
