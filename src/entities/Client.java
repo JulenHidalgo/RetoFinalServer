@@ -7,13 +7,9 @@ package entities;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Temporal;
-import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 /**
  *
@@ -21,17 +17,34 @@ import javax.validation.constraints.Past;
  */
 @Entity
 public class Client extends User implements Serializable {
-
    
-    private String nombre;
-    private String apellido;
-    private String ciudad;
-    private Integer telefono;
+    @NotNull
+    private String nombre = "";
+    @NotNull
+    private String apellido = "";
+    @NotNull
+    private String ciudad = "";
+    @NotNull
+    private Integer telefono = 0;
     @Temporal(javax.persistence.TemporalType.DATE)
     @Past
     private Date fehcaNacimiento; 
+    @NotNull
     private String dni;
             
+    public Client(){
+        super();
+    }
+
+    public Client(String nombre, String apellido, String ciudad, Integer telefono, Date fehcaNacimiento, String dni, String mail, String passwd) {
+        super(mail, passwd, false);
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.ciudad = ciudad;
+        this.telefono = telefono;
+        this.fehcaNacimiento = fehcaNacimiento;
+        this.dni = dni;
+    }
     
     public String getNombre() {
         return nombre;
@@ -79,14 +92,6 @@ public class Client extends User implements Serializable {
 
     public void setDni(String dni) {
         this.dni = dni;
-    }
-    
-    
-    
-
-    @Override
-    public String toString() {
-        return "";
     }
     
 }
