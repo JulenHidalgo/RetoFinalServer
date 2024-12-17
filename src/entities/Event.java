@@ -10,11 +10,14 @@ import static java.sql.Date.valueOf;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
+import static javax.persistence.CascadeType.ALL;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -22,6 +25,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.validation.constraints.Future;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -34,23 +38,33 @@ public class Event implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-     @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    private Long id;
+    private Long idEvent;
+     
     private String nombre = "";
+    
     @Temporal(javax.persistence.TemporalType.DATE)
     @Future
     private Date fecha = valueOf(LocalDate.now());
+    
     private Integer NumEntradas = 0;
+    
     private Integer consumicion = 0;
+    
     private Double precioEntrada = 0.0;
+    
     @ManyToOne
     @JoinColumn(name="club")
     private Club club; 
-    @ManyToMany(mappedBy="events")
-    private Set artists;
-    @OneToMany(mappedBy="event")
-    private Set tickets;
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="artist_event", schema="nocturna", joinColumns = @JoinColumn(name="events_idEvent", referencedColumnName="idEvent"),
+            inverseJoinColumns = @JoinColumn(name="artists_idArtist", referencedColumnName="idArtist"))
+    private Set<Artist> artists;
+    
+    @OneToMany(cascade=ALL, mappedBy="event")
+    private Set<Ticket> tickets;
     
     /**
      * Constructor vacio
@@ -59,11 +73,11 @@ public class Event implements Serializable {
     }
     
     public Long getId() {
-        return id;
+        return idEvent;
     }
 
     public void setId(Long idEvent) {
-        this.id = idEvent;
+        this.idEvent = idEvent;
     }
 
     public String getNombre() {
@@ -108,7 +122,7 @@ public class Event implements Serializable {
     }
  
     public Club getClub(){
-       return  this.club;    
+       return this.club;    
     }
 
     public void setClub(Club club) {
@@ -116,27 +130,28 @@ public class Event implements Serializable {
     }
     
 
-    public Set getArtits(){
+    public Set<Artist> getArtits(){
        return  this.artists;     
     }
 
-    public void setArtists(Set artists) {
+    public void setArtists(Set<Artist> artists) {
         this.artists = artists;
     }
     
-    public Set getTickets(){
-       return  this.tickets;
+    @XmlTransient
+    public Set<Ticket> getTickets(){
+       return this.tickets;
         
     }
 
-    public void setTickets(Set tickets) {
+    public void setTickets(Set<Ticket> tickets) {
         this.tickets = tickets;
     }
     
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (idEvent != null ? idEvent.hashCode() : 0);
         return hash;
     }
 
@@ -147,7 +162,7 @@ public class Event implements Serializable {
             return false;
         }
         Event other = (Event) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.idEvent == null && other.idEvent != null) || (this.idEvent != null && !this.idEvent.equals(other.idEvent))) {
             return false;
         }
         return true;
@@ -155,7 +170,7 @@ public class Event implements Serializable {
 
     @Override
     public String toString() {
-        return "enties.EventEntity[ id=" + id + " ]";
+        return "enties.EventEntity[ id=" + idEvent + " ]";
     }
     
 }

@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -45,6 +46,7 @@ public class Club implements Serializable {
     @OneToMany(cascade=CascadeType.ALL, mappedBy = "club")
     private Set<Event> events;
 
+    @XmlTransient
     public Set<Event> getEvents() {
         return events;
     }

@@ -11,12 +11,19 @@ import static java.sql.Date.valueOf;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -25,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author 2dam
  */
 @Entity
-@Table(name="ticket" , schema="nocturna")
+@Table(name = "ticket", schema = "nocturna")
 @XmlRootElement
 public class Ticket implements Serializable {
 
@@ -33,30 +40,37 @@ public class Ticket implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+
     @NotNull
     private String dniComprador;
-    
+
     @NotNull
     private Long idEvento;
 
+    @ElementCollection
+    @CollectionTable(
+            name = "ticket_dni_asistentes", // Nombre de la tabla
+            schema = "nocturna",
+            joinColumns = @JoinColumn(name = "ticket_id") // Llave foránea hacia la tabla principal
+    )
+    @Column(name = "dni_asistente")
     private Set<String> dniAsistentes;
-    
+
     @NotNull
     private Double importeCompra;
-    
-    @NotNull
+
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date fechaCompra;
-    
+
     @NotNull
     private Integer cantidad;
-    
-    @NotNull
+
+    @Enumerated(EnumType.ORDINAL)
     private FormaPago formapago;
-    
+
     @ManyToOne
     private Event event;
-    
+
     @ManyToOne
     private User user;
 
@@ -85,8 +99,7 @@ public class Ticket implements Serializable {
     public User getUser() {
         return user;
     }
-    
-    
+
     public String getDniComprador() {
         return dniComprador;
     }
@@ -95,7 +108,7 @@ public class Ticket implements Serializable {
         return idEvento;
     }
 
-    public Set<String> getDniAsistentes() {
+    public Set getDniAsistentes() {
         return dniAsistentes;
     }
 
@@ -123,7 +136,7 @@ public class Ticket implements Serializable {
         this.idEvento = idEvento;
     }
 
-    public void setDniAsistentes(Set<String> dniAsistentes) {
+    public void setDniAsistentes(Set dniAsistentes) {
         this.dniAsistentes = dniAsistentes;
     }
 
@@ -142,7 +155,6 @@ public class Ticket implements Serializable {
     public void setFormapago(FormaPago formapago) {
         this.formapago = formapago;
     }
-    
 
     public Long getId() {
         return id;
@@ -176,5 +188,5 @@ public class Ticket implements Serializable {
     public String toString() {
         return "entities.Ticket[ id=" + id + " ]";
     }
-    
+
 }

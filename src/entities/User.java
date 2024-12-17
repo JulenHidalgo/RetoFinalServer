@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -30,17 +31,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
     @NotNull
     private String mail = "";
+    
     @NotNull
     private String passwd = "";
+    
     @NotNull
     private Boolean isAdmin = false;
+    
     @OneToMany(cascade=ALL, mappedBy="user")
-    private Set tickets;
+    private Set<Ticket> tickets;
 
     public User() {
     }
@@ -75,11 +81,12 @@ public class User implements Serializable {
         this.passwd = passwd;
     }
     
-    public Set getTickets() {
+    @XmlTransient
+    public Set<Ticket> getTickets() {
         return tickets;
     }
     
-    public void setTickets(Set tickets) {
+    public void setTickets(Set<Ticket> tickets) {
         this.tickets = tickets;
     }
     

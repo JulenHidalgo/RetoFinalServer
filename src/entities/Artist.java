@@ -8,14 +8,17 @@ package entities;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -29,27 +32,26 @@ public class Artist implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long idArtist;
     @NotNull
     protected String nombre = "";
     @NotNull
     protected String tipoMusica = "";
     protected String descripcion = "";
     
-    @ManyToMany
-    @JoinTable(name="artist_event")
-    protected Set events;
+    @ManyToMany(mappedBy="artists", fetch = FetchType.EAGER)
+    protected Set<Event> events;
 
     public Artist() {
         
     }
 
     public Long getId() {
-        return id;
+        return idArtist;
     }
 
     public void setId(Long idArtista) {
-        this.id = idArtista;
+        this.idArtist = idArtista;
     }
 
     public String getNombre() {
@@ -76,18 +78,19 @@ public class Artist implements Serializable {
         this.descripcion = descripcion;
     }
     
-    public Set getEvents(){
+    @XmlTransient
+    public Set<Event> getEvents(){
         return events;
     }
     
-    public void getEvents(Set events){
+    public void getEvents(Set<Event> events){
         this.events = events;
     }
     
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (idArtist != null ? idArtist.hashCode() : 0);
         return hash;
     }
 
@@ -98,7 +101,7 @@ public class Artist implements Serializable {
             return false;
         }
         Artist other = (Artist) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.idArtist == null && other.idArtist != null) || (this.idArtist != null && !this.idArtist.equals(other.idArtist))) {
             return false;
         }
         return true;
@@ -106,7 +109,7 @@ public class Artist implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.ArtistEntity[ id=" + id + " ]";
+        return "entities.ArtistEntity[ id=" + idArtist + " ]";
     }
     
 }
