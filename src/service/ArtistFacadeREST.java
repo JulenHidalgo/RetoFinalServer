@@ -82,6 +82,16 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     public String countREST() {
         return String.valueOf(super.count());
     }
+    
+    
+    @GET
+    @Path("artistsByEvent/{idEvent}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Artist> findByEvent(@PathParam("idEvent") Long idEvent) {
+        return em.createNamedQuery("findArtistsByEvent").setParameter("idEvent", idEvent).getResultList();
+    }
+    
+    
 
     @Override
     protected EntityManager getEntityManager() {

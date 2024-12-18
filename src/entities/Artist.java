@@ -12,9 +12,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -24,8 +24,15 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author 2dam
  */
+
+@NamedQueries({
+    @NamedQuery(name = "findArtistsByEvent", 
+            query = "SELECT a FROM Artist a JOIN a.events e WHERE e.idEvent = :idEvent"),
+})
+
+
 @Entity
-@Table(name="artist" , schema="nocturna")
+@Table(name = "artist", schema = "nocturna")
 @XmlRootElement
 public class Artist implements Serializable {
 
@@ -38,12 +45,12 @@ public class Artist implements Serializable {
     @NotNull
     protected String tipoMusica = "";
     protected String descripcion = "";
-    
-    @ManyToMany(mappedBy="artists", fetch = FetchType.EAGER)
+
+    @ManyToMany(mappedBy = "artists", fetch = FetchType.EAGER)
     protected Set<Event> events;
 
     public Artist() {
-        
+
     }
 
     public Long getId() {
@@ -77,16 +84,16 @@ public class Artist implements Serializable {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    
+
     @XmlTransient
-    public Set<Event> getEvents(){
+    public Set<Event> getEvents() {
         return events;
     }
-    
-    public void getEvents(Set<Event> events){
+
+    public void getEvents(Set<Event> events) {
         this.events = events;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -111,5 +118,5 @@ public class Artist implements Serializable {
     public String toString() {
         return "entities.ArtistEntity[ id=" + idArtist + " ]";
     }
-    
+
 }

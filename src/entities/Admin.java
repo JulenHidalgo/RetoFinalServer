@@ -29,13 +29,6 @@ public class Admin extends User implements Serializable {
         super(mail, passwd, true);
         this.departamento = departamento;
     }
-    
-    
-    
-    public Admin(String departamento){
-        super();
-        this.departamento = departamento;
-    }
 
     public String getDepartamento() {
         return departamento;
