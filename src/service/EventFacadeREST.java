@@ -5,14 +5,18 @@
  */
 package service;
 
+import entities.Artist;
 import entities.Event;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -30,7 +34,8 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
     @PersistenceContext(unitName = "NocturnaServerPU")
     private EntityManager em;
-
+     private static final Logger log = Logger.getLogger(ArtistFacadeREST.class.getName());
+     
     public EventFacadeREST() {
         super(Event.class);
     }
@@ -82,7 +87,26 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     public String countREST() {
         return String.valueOf(super.count());
     }
-
+    
+    
+    @GET
+    @Path("findEventsByArtist/{idArtist}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Event> findByArtist(@PathParam("idArtist") Long idArtist) {
+        List<Event> events=null;
+        try {
+            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", idArtist);
+            events=em.createNamedQuery("findEventsByArtist").
+                    setParameter("idArtist", idArtist).getResultList();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE,
+                    "ArtistRESTful service: Exception reading users by profile, {0}",
+                    ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
+        return events;
+    }
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;

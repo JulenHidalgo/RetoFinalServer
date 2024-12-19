@@ -20,6 +20,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -31,6 +33,13 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author 2dam
  */
+
+@NamedQueries({
+    @NamedQuery(name = "findEventsByArtist", 
+            query = "SELECT e FROM Event e JOIN  e.artists a WHERE a.idArtist = :idArtist"),
+})
+
+
 @Entity
 @Table(name="event" , schema="nocturna")
 @XmlRootElement

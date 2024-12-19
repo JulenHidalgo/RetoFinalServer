@@ -84,6 +84,11 @@ public class Ticket implements Serializable {
         this.formapago = formapago;
     }
 
+    public Ticket() {
+    }
+    
+    
+
     public void setEvent(Event event) {
         this.event = event;
     }
