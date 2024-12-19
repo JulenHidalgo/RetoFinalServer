@@ -6,13 +6,17 @@
 package service;
 
 import entities.Club;
+import java.sql.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -27,6 +31,7 @@ import javax.ws.rs.core.MediaType;
 @Stateless
 @Path("entities.club")
 public class ClubFacadeREST extends AbstractFacade<Club> {
+    private static final Logger log = Logger.getLogger(ArtistFacadeREST.class.getName());
 
     @PersistenceContext(unitName = "NocturnaServerPU")
     private EntityManager em;
@@ -81,6 +86,68 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
         return String.valueOf(super.count());
+    }
+    
+    @GET
+    @Path("club/date/{fechaIni}/{fechafin}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Club> getClubsByEventDates(@PathParam("fechaIni") Date fechaIni,
+            @PathParam("fechafin") Date fechafin) {
+        List<Club> clubs=null;
+        try {
+            log.log(Level.INFO,"ClubRESTful service: find clubs with events "
+                    + "into dates{0}.");
+            clubs=em.createNamedQuery("getClubsByEventDates").
+                    setParameter("fechaIni", fechaIni).
+                    setParameter("fechafin", fechafin).getResultList();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE,
+                    "ClubRESTful service: Exception finding clubs with "
+                            + "events into dates{0}.",
+                    ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
+        return clubs;
+    }
+    
+    @GET
+    @Path("club/date/{fecha}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Club> getClubsByEventDate(@PathParam("fecha") Date fecha) {
+        List<Club> clubs=null;
+        try {
+            log.log(Level.INFO,"ClubRESTful service: find clubs with "
+                    + "events in one date{0}.");
+            clubs=em.createNamedQuery("getClubsByEventDate").
+                    setParameter("fecha", fecha).getResultList();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE,
+                    "ClubRESTful service: Exception finding clubs with "
+                            + "events in one date{0}.",
+                    ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
+        return clubs;
+    }
+    
+    @GET
+    @Path("club/{idEvent}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Club> getClubNameByEventId(@PathParam("idEvent") Long idEvent) {
+        List<Club> clubs=null;
+        try {
+            log.log(Level.INFO,"ClubRESTful service: find clubs "
+                    + "with events into dates{0}.");
+            clubs=em.createNamedQuery("getClubNameByEventId").
+                    setParameter("idEvent", idEvent).getResultList();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE,
+                    "ClubRESTful service: Exception finding users by "
+                            + "profile, {0}",
+                    ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
+        return clubs;
     }
 
     @Override
