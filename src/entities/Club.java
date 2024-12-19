@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -22,6 +24,17 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author 2dam
  */
+@NamedQueries({
+    @NamedQuery(name = "getClubsByEventDates", 
+            query = "SELECT c FROM Club c JOIN c.events e WHERE e.fecha "
+                    + "> :fechaIni and e.fecha < :fechafin"),
+    @NamedQuery(name = "getClubsByEventDate", 
+            query = "SELECT c FROM Club c JOIN c.events e WHERE e.fecha "
+                    + "= :fecha"),
+    @NamedQuery(name = "getClubNameByEventId", 
+            query = "SELECT c.nombre FROM Club c JOIN c.events e WHERE e.idEvent "
+                    + "= :idEvent"),
+})
 @Entity
 @Table(name="club", schema="nocturna")
 @XmlRootElement
