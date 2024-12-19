@@ -7,6 +7,7 @@ package service;
 
 import entities.Artist;
 import entities.Event;
+import java.sql.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -98,6 +99,42 @@ public class EventFacadeREST extends AbstractFacade<Event> {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", idArtist);
             events=em.createNamedQuery("findEventsByArtist").
                     setParameter("idArtist", idArtist).getResultList();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE,
+                    "ArtistRESTful service: Exception reading users by profile, {0}",
+                    ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
+        return events;
+    }
+    
+    @GET
+    @Path("findEventsByDate/{fecha}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Event> findByDate(@PathParam("fecha") Date fecha) {
+        List<Event> events=null;
+        try {
+            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fecha);
+            events=em.createNamedQuery("findEventsByDate").
+                    setParameter("fecha", fecha).getResultList();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE,
+                    "ArtistRESTful service: Exception reading users by profile, {0}",
+                    ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
+        return events;
+    }
+    
+     @GET
+    @Path("findEventsByDates/{de_fecha}/{hasta_fecha}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Event> findByDates(@PathParam("de_fecha") Date fecha1, @PathParam("hasta_fecha") Date fecha2) {
+        List<Event> events=null;
+        try {
+            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fecha1);
+            events=em.createNamedQuery("findEventsByDates").
+                    setParameter("de_fecha", fecha1).setParameter("hasta_fecha", fecha2).getResultList();
         } catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading users by profile, {0}",

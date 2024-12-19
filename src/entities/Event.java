@@ -29,14 +29,22 @@ import javax.validation.constraints.Future;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+
 /**
  *
  * @author 2dam
  */
 
 @NamedQueries({
+    /**sacar loseventos donde actua un artista introducido*/
     @NamedQuery(name = "findEventsByArtist", 
             query = "SELECT e FROM Event e JOIN  e.artists a WHERE a.idArtist = :idArtist"),
+    /**sacar los eventos que sean en esa fecha*/
+    @NamedQuery(name = "findEventsByDate", 
+            query = "SELECT e FROM Event e WHERE e.fecha = :fecha"),
+    /**sacar los eventos que esten entre las dos fechas*/
+    @NamedQuery(name = "findEventsByDates", 
+            query = "SELECT e FROM Event e WHERE e.fecha >= :fecha1 and e.fecha <= :fecha2 ")
 })
 
 
