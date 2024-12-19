@@ -86,16 +86,15 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     public String countREST() {
         return String.valueOf(super.count());
     }
-    
-    
+
     @GET
     @Path("artistsByEvent/{idEvent}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Artist> findByEvent(@PathParam("idEvent") Long idEvent) {
-        List<Artist> artists=null;
+        List<Artist> artists = null;
         try {
-            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", idEvent);
-            artists=em.createNamedQuery("findArtistsByEvent").
+            log.log(Level.INFO, "ArtistRESTful service: find users by event {0}.", idEvent);
+            artists = em.createNamedQuery("findArtistsByEvent").
                     setParameter("idEvent", idEvent).getResultList();
         } catch (Exception ex) {
             log.log(Level.SEVERE,
@@ -105,12 +104,28 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
         }
         return artists;
     }
-    
-    
+
+    @GET
+    @Path("artistsNotByEvent/{idEvent}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Artist> findNotByEvent(@PathParam("idEvent") Long idEvent) {
+        List<Artist> artists = null;
+        try {
+            log.log(Level.INFO, "ArtistRESTful service: find users not by event {0}.", idEvent);
+            artists = em.createNamedQuery("findArtistsNotByEvent").
+                    setParameter("idEvent", idEvent).getResultList();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE,
+                    "ArtistRESTful service: Exception reading users by profile, {0}",
+                    ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
+        return artists;
+    }
 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }
