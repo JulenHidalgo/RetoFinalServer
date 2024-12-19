@@ -24,12 +24,12 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author 2dam
  */
-
 @NamedQueries({
-    @NamedQuery(name = "findArtistsByEvent", 
-            query = "SELECT a FROM Artist a JOIN a.events e WHERE e.idEvent = :idEvent"),
+    @NamedQuery(name = "findArtistsByEvent",
+        query = "SELECT a FROM Artist a JOIN a.events e WHERE e.idEvent = :idEvent"),
+    @NamedQuery(name = "findArtistsNotByEvent",
+        query = "SELECT a FROM Artist a LEFT JOIN a.events e WHERE e.idEvent <> :idEvent OR e.idEvent IS NULL"),
 })
-
 
 @Entity
 @Table(name = "artist", schema = "nocturna")
