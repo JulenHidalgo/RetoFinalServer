@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "getClubsByEventDates", 
             query = "SELECT c FROM Club c JOIN c.events e WHERE e.fecha "
-                    + "> :fechaIni and e.fecha < :fechafin"),
+                    + ">= :fechaIni and e.fecha <= :fechafin"),
     @NamedQuery(name = "getClubsByEventDate", 
             query = "SELECT c FROM Club c JOIN c.events e WHERE e.fecha "
                     + "= :fecha"),
