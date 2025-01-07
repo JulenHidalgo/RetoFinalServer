@@ -13,7 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NamedQuery;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -129,12 +131,15 @@ public class EventFacadeREST extends AbstractFacade<Event> {
      @GET
     @Path("findEventsByDates/{de_fecha}/{hasta_fecha}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Event> findByDates(@PathParam("de_fecha") Date fecha1, @PathParam("hasta_fecha") Date fecha2) {
+    public List<Event> findByDates(@PathParam("fechaIni") Date fechaIni, @PathParam("fechaFin") Date fechaFin) {
         List<Event> events=null;
+        Query query;
         try {
-            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fecha1);
-            events=em.createNamedQuery("findEventsByDates").
-                    setParameter("de_fecha", fecha1).setParameter("hasta_fecha", fecha2).getResultList();
+            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fechaIni);
+            query=em.createNamedQuery("findEventsByDates");
+            query.setParameter("fechaIni", fechaIni);
+            query.setParameter("fechaFin", fechaFin);
+            events=query.getResultList();
         } catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading users by profile, {0}",
