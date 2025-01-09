@@ -11,11 +11,13 @@ import java.sql.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javassist.NotFoundException;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NamedQuery;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -97,10 +99,16 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Event> findByArtist(@PathParam("idArtist") Long idArtist) {
         List<Event> events=null;
+        if(idArtist == null){
+              throw new BadRequestException("Los parametros no pueden estar vacios");  
+        }
         try {
-            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", idArtist);
+            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", idArtist);         
             events=em.createNamedQuery("findEventsByArtist").
                     setParameter("idArtist", idArtist).getResultList();
+            if(events.isEmpty()){
+              throw new NotFoundException("No hay eventos con el codigo de artista"+idArtist);
+        }
         } catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading users by profile, {0}",
@@ -115,6 +123,9 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Event> findByDate(@PathParam("fecha") Date fecha) {
         List<Event> events=null;
+        if(fecha == null){
+              throw new BadRequestException("Los parametros no pueden estar vacios");  
+        }
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fecha);
             events=em.createNamedQuery("findEventsByDate").
@@ -128,12 +139,16 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         return events;
     }
     
-     @GET
+    @GET
     @Path("findEventsByDates/{de_fecha}/{hasta_fecha}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Event> findByDates(@PathParam("fechaIni") Date fechaIni, @PathParam("fechaFin") Date fechaFin) {
         List<Event> events=null;
         Query query;
+        if(fechaIni == null || fechaFin == null){
+            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fechaIni);
+              throw new BadRequestException("Los parametros no pueden estar vacios");  
+        }
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fechaIni);
             query=em.createNamedQuery("findEventsByDates");
