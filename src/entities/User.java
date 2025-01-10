@@ -32,7 +32,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "login", 
             query = "SELECT u FROM User u WHERE u.mail= :mail AND u.passwd= :passwd"),
     @NamedQuery(name = "resetPasswd", 
-            query = "UPDATE User u SET u.passwd = :newPasswd WHERE u.mail = :mail")
+            query = "UPDATE User u SET u.passwd = :newPasswd WHERE u.mail = :mail"),
+    @NamedQuery(name = "getUserByEmail", 
+            query = "SELECT u FROM User u WHERE u.mail = :mail")
 })
 
 
