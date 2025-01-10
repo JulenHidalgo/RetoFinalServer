@@ -14,6 +14,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -24,6 +26,16 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author 2dam
  */
+
+@NamedQueries({
+    /**sacar loseventos donde actua un artista introducido*/
+    @NamedQuery(name = "login", 
+            query = "SELECT u FROM User u WHERE u.mail= :mail AND u.passwd= :passwd"),
+    @NamedQuery(name = "resetPasswd", 
+            query = "UPDATE User u SET u.passwd = :newPasswd WHERE u.mail = :mail")
+})
+
+
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name="user" , schema="nocturna")
