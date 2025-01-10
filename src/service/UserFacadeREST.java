@@ -27,6 +27,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import security.PasswordGenerator;
+import security.Security;
 
 
 /**
@@ -141,7 +143,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
         }
         try {
             log.log(Level.INFO, "UserRESTful service: updating password for {0}.", newPasswd);
-            user.setPasswd(newPasswd);
+            user.setPasswd(Security.hashText(newPasswd));
             super.edit(user);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
@@ -152,6 +154,38 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+    
+    
+    @GET
+    @Path("resetPassword/{userEmail}")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void resetPassword(@PathParam("userEmail") String userEmail) throws NotFoundException {
+         Query query;
+         User user;
+         
+        if (userEmail == null || userEmail.isEmpty()) {
+            log.log(Level.INFO, "UserRESTful service: invalid new password {0}.", userEmail);
+            throw new BadRequestException("Los parámetros no pueden estar vacíos");
+        }
+        try {
+            query=em.createNamedQuery("getUserByEmail");
+            query.setParameter("mail", userEmail);
+            user=(User) query.getSingleResult();
+            if(user==null){
+              throw new NotFoundException("El email o la contraseña no coinciden");
+            }
+            log.log(Level.INFO, "UserRESTful service: reseting password for {0}.", userEmail);
+            user.setPasswd(Security.hashText(PasswordGenerator.getPassword()));
+            super.edit(user);
+        } catch (NotFoundException ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
+            throw new NotFoundException("El correo no coincide con ningun usuario");
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
     
 }
