@@ -29,6 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import security.PasswordGenerator;
 import security.Security;
+import smtp.Smtp;
 
 
 /**
@@ -164,6 +165,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public void resetPassword(@PathParam("userEmail") String userEmail) throws NotFoundException {
          Query query;
          User user;
+         String pass;
          
         if (userEmail == null || userEmail.isEmpty()) {
             log.log(Level.INFO, "UserRESTful service: invalid new password {0}.", userEmail);
@@ -177,8 +179,10 @@ public class UserFacadeREST extends AbstractFacade<User> {
               throw new NotFoundException("El email o la contraseña no coinciden");
             }
             log.log(Level.INFO, "UserRESTful service: reseting password for {0}.", userEmail);
-            user.setPasswd(Security.hashText(PasswordGenerator.getPassword()));
+            pass = PasswordGenerator.getPassword();
+            user.setPasswd(Security.hashText(pass));
             super.edit(user);
+            Smtp.sendEmail(user.getMail(), pass);
         } catch (NotFoundException ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
             throw new NotFoundException("El correo no coincide con ningun usuario");
