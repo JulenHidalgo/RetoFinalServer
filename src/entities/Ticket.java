@@ -22,6 +22,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.validation.constraints.NotNull;
@@ -31,6 +33,13 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author 2dam
  */
+@NamedQueries({
+    /**sacar las entradas del usuaario que ha iniciado sesion*/
+    @NamedQuery(name = "findTicketByUser", 
+            query = "SELECT t FROM  Ticket t WHERE t.dniComprador = :dni"),
+    
+})
+
 @Entity
 @Table(name = "ticket", schema = "nocturna")
 @XmlRootElement

@@ -7,12 +7,17 @@ package service;
 
 import entities.Ticket;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javassist.NotFoundException;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -83,6 +88,31 @@ public class TicketFacadeREST extends AbstractFacade<Ticket> {
         return String.valueOf(super.count());
     }
 
+     @GET
+    @Path("findTicketByUser/{dni}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Ticket> findTicketByUser(@PathParam("dni") String dni) throws NotFoundException {
+        List<Ticket> tickets = null;
+        if (dni == null) { 
+            throw new BadRequestException("El parámetro 'idEvent' es obligatorio.");
+        }
+        try {
+           
+            tickets = em.createNamedQuery("findTicketByUser").
+                    setParameter("dni", dni).getResultList();
+            if (tickets == null || tickets.isEmpty()) {
+                throw new NotFoundException("El usuario con dni : " + dni+" no tiene ninguna entrada");
+            }
+        } catch(NotFoundException e){
+            throw new NotFoundException("El usuario con dni : " + dni+" no tiene ninguna entrada");
+        }catch (Exception ex) {
+            
+
+            throw new InternalServerErrorException(ex);
+        }
+        return tickets;
+    }
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;
