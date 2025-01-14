@@ -32,7 +32,7 @@ public class Client extends User implements Serializable {
     private Integer telefono = 0;
     @Temporal(javax.persistence.TemporalType.DATE)
     @Past
-    private Date fehcaNacimiento; 
+    private Date fechaNacimiento; 
     @NotNull
     private String dni;
             
@@ -40,13 +40,13 @@ public class Client extends User implements Serializable {
         super();
     }
 
-    public Client(String nombre, String apellido, String ciudad, Integer telefono, Date fehcaNacimiento, String dni, String mail, String passwd) {
+    public Client(String nombre, String apellido, String ciudad, Integer telefono, Date fechaNacimiento, String dni, String mail, String passwd) {
         super(mail, passwd, false);
         this.nombre = nombre;
         this.apellido = apellido;
         this.ciudad = ciudad;
         this.telefono = telefono;
-        this.fehcaNacimiento = fehcaNacimiento;
+        this.fechaNacimiento = fechaNacimiento;
         this.dni = dni;
     }
     
@@ -82,12 +82,12 @@ public class Client extends User implements Serializable {
         this.telefono = telefono;
     }
 
-    public Date getFehcaNacimiento() {
-        return fehcaNacimiento;
+    public Date getFechaNacimiento() {
+        return fechaNacimiento;
     }
 
-    public void setFehcaNacimiento(Date fehcaNacimiento) {
-        this.fehcaNacimiento = fehcaNacimiento;
+    public void setFechaNacimiento(Date fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     public String getDni() {
