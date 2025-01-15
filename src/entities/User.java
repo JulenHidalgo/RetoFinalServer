@@ -87,6 +87,7 @@ public class User implements Serializable {
         this.mail = mail;
     }
 
+    @XmlTransient
     public String getPasswd() {
         return passwd;
     }

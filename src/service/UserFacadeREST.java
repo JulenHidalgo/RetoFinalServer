@@ -52,6 +52,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(User entity) {
+        entity.setPasswd(Security.hashText(entity.getPasswd()));
         super.create(entity);
     }
 
@@ -137,6 +138,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void updatePasswd(@PathParam("newPasswd") String newPasswd, User user) {
          Query query;
+         String subject, text;
          
         if (newPasswd == null || newPasswd.isEmpty()) {
             log.log(Level.INFO, "UserRESTful service: invalid new password {0}.", newPasswd);
@@ -146,6 +148,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
             log.log(Level.INFO, "UserRESTful service: updating password for {0}.", newPasswd);
             user.setPasswd(Security.hashText(newPasswd));
             super.edit(user);
+            subject = "Solicitud de cambio de contraseña";
+            text = "El cambio de contraseña solicitado ha sido un exito";
+            Smtp.sendEmail(user.getMail(), newPasswd, subject, text);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -166,6 +171,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
          Query query;
          User user;
          String pass;
+         String subject, text;
          
         if (userEmail == null || userEmail.isEmpty()) {
             log.log(Level.INFO, "UserRESTful service: invalid new password {0}.", userEmail);
@@ -182,7 +188,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
             pass = PasswordGenerator.getPassword();
             user.setPasswd(Security.hashText(pass));
             super.edit(user);
-            Smtp.sendEmail(user.getMail(), pass);
+            subject = "Solicitud de restablecimiento de contraseña";
+            text = "Su nueva contraseña es: " + pass;
+            Smtp.sendEmail(user.getMail(), pass, subject, text);
         } catch (NotFoundException ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
             throw new NotFoundException("El correo no coincide con ningun usuario");
