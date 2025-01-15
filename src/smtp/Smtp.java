@@ -19,14 +19,16 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
-import java.util.ResourceBundle;
+import security.CriptografiaSimetrica;
+import security.Security;
 
 public class Smtp {
     static String EMAIL;
     static String PASSWORD;
     static Properties props;
     
-    public static void sendEmail(String receiver, String newPass) throws Exception {
+    public static void sendEmail(String receiver, String newPass,
+            String subject, String text) throws Exception {
         setSmtpData();
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
@@ -40,9 +42,8 @@ public class Smtp {
             message.setFrom(new InternetAddress(EMAIL));
             message.setRecipients(Message.RecipientType.TO, 
                     InternetAddress.parse(receiver));
-            message.setSubject("Solicitud de restablecimiento de contrasena de "
-                    + "la cuenta");
-            message.setText("Nueva contasena: " + newPass);
+            message.setSubject(subject);
+            message.setText(text);
 
             Transport.send(message);
             System.out.println("Email sent successfully to " + receiver);
@@ -62,9 +63,9 @@ public class Smtp {
     }
 
     private static void setFilePropData() {
-        ResourceBundle fichConf = ResourceBundle.getBundle("smtp.smtpCredentials");
-        EMAIL = fichConf.getString("EMAIL");
-        PASSWORD = fichConf.getString("PASSWORD");
-
+        EMAIL = CriptografiaSimetrica.descifrarTexto("Codorniz", "EMAIL");
+        PASSWORD = Security.descifrarTexto("Codorniz", "PASSWORD");
+        //EMAIL = "nocturnatartanga@gmail.com";
+        //PASSWORD = "thhi lskx wkwe cnsm";
     }
 }
