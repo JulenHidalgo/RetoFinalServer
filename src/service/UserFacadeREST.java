@@ -5,15 +5,14 @@
  */
 package service;
 
-import entities.Event;
 import entities.User;
-import java.sql.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javassist.NotFoundException;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.ws.rs.BadRequestException;
@@ -21,6 +20,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -52,8 +52,27 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(User entity) {
-        entity.setPasswd(Security.hashText(entity.getPasswd()));
-        super.create(entity);
+        Query query;
+        User user;
+        try{
+            query=em.createNamedQuery("getUserByEmail");
+            query.setParameter("mail", entity.getMail());
+            user=(User) query.getSingleResult();
+            throw new NotAcceptableException();
+        } catch (NoResultException e) {
+            try{
+                entity.setPasswd(Security.hashText(entity.getPasswd()));
+                super.create(entity);
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+                throw new InternalServerErrorException(ex);
+            }
+        } catch (NotAcceptableException e) {
+            throw new NotAcceptableException("El correo introducido ya existe");
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @PUT
@@ -113,13 +132,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
             query.setParameter("mail", mail);
             query.setParameter("passwd", Security.hashText(passwd));
             user=(User) query.getSingleResult();
-            if(user==null)
-              throw new NotFoundException("El email o la contraseña no coinciden");
-            
-        }catch(NotFoundException e){
-            
+        }catch(NoResultException ex){
+            log.log(Level.SEVERE, "UserRESTful service: No user found.", ex.getMessage()); 
             throw new NotFoundException("El email o la contraseña no coinciden");
-            
         } catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading users by profile, {0}",
@@ -129,14 +144,11 @@ public class UserFacadeREST extends AbstractFacade<User> {
         return user;
     }
     
-    
-    
-    
     @PUT
     @Path("updatePasswd/{newPasswd}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void updatePasswd(@PathParam("newPasswd") String newPasswd, User user) {
+    public void updatePasswd(@PathParam("newPasswd") String newPasswd, User user)  throws NotFoundException {
          Query query;
          String subject, text;
          
@@ -151,6 +163,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
             subject = "Solicitud de cambio de contraseña";
             text = "El cambio de contraseña solicitado ha sido un exito";
             Smtp.sendEmail(user.getMail(), newPasswd, subject, text);
+        } catch (NoResultException ex) {
+            log.log(Level.SEVERE, "UserRESTful service: No user found.", ex.getMessage());
+            throw new NotFoundException("El correo no coincide con ningun usuario");
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -181,9 +196,6 @@ public class UserFacadeREST extends AbstractFacade<User> {
             query=em.createNamedQuery("getUserByEmail");
             query.setParameter("mail", userEmail);
             user=(User) query.getSingleResult();
-            if(user==null){
-              throw new NotFoundException("El email o la contraseña no coinciden");
-            }
             log.log(Level.INFO, "UserRESTful service: reseting password for {0}.", userEmail);
             pass = PasswordGenerator.getPassword();
             user.setPasswd(Security.hashText(pass));
@@ -191,8 +203,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
             subject = "Solicitud de restablecimiento de contraseña";
             text = "Su nueva contraseña es: " + pass;
             Smtp.sendEmail(user.getMail(), pass, subject, text);
-        } catch (NotFoundException ex) {
-            log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
+        } catch (NoResultException ex) {
+            log.log(Level.SEVERE, "UserRESTful service: No user found {0}.", ex.getMessage());
             throw new NotFoundException("El correo no coincide con ningun usuario");
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
