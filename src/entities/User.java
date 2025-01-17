@@ -112,8 +112,6 @@ public class User implements Serializable {
     public void setTickets(Set<Ticket> tickets) {
         this.tickets = tickets;
     }
-    
-    
 
     @Override
     public int hashCode() {
