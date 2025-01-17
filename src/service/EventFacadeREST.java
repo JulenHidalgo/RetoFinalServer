@@ -7,7 +7,10 @@ package service;
 
 import entities.Artist;
 import entities.Event;
-import java.sql.Date;
+import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -121,12 +124,17 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @GET
     @Path("findEventsByDate/{fecha}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Event> findByDate(@PathParam("fecha") Date fecha) {
+    public List<Event> findByDate(@PathParam("fecha") String fechalocal) {
         List<Event> events=null;
-        if(fecha == null){
+        if(fechalocal == null){
               throw new BadRequestException("Los parametros no pueden estar vacios");  
         }
         try {
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localDate = LocalDate.parse(fechalocal, formatter);
+            Date fecha = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fecha);
             events=em.createNamedQuery("findEventsByDate").
                     setParameter("fecha", fecha).getResultList();

@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
             query = "SELECT e FROM Event e JOIN  e.artists a WHERE a.idArtist = :idArtist"),
     /**sacar los eventos que sean en esa fecha*/
     @NamedQuery(name = "findEventsByDate", 
-            query = "SELECT e FROM Event e WHERE e.fecha = :fecha"),
+            query = "SELECT e FROM Event e WHERE e.fecha > :fecha"),
     /**sacar los eventos que esten entre las dos fechas*/
     @NamedQuery(name = "findEventsByDates", 
             query = "SELECT e FROM Event e WHERE e.fecha >:fechaIni AND e.fecha <:fechaFin "),  
