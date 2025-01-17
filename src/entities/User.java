@@ -87,6 +87,14 @@ public class User implements Serializable {
         this.mail = mail;
     }
 
+    public Boolean getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(Boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
     @XmlTransient
     public String getPasswd() {
         return passwd;
