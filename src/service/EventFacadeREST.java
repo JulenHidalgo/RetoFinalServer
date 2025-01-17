@@ -120,7 +120,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         }
         return events;
     }
-    
+     
     @GET
     @Path("findEventsByDate/{fecha}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
