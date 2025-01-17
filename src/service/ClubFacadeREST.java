@@ -145,16 +145,16 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
     @GET
     @Path("club/{idEvent}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Club> getClubNameByEventId(@PathParam("idEvent") Long idEvent) {
-        List<Club> clubs=null;
+    public Club getClubNameByEventId(@PathParam("idEvent") Long idEvent) {
+        Club club=null;
         if (idEvent == null){
             throw new BadRequestException("El evento no puede ser nulo");
         }
         try {
             log.log(Level.INFO,"ClubRESTful service: find clubs "
                     + "with events into dates{0}.");
-            clubs=em.createNamedQuery("getClubNameByEventId").
-                    setParameter("idEvent", idEvent).getResultList();
+            club=(Club) em.createNamedQuery("getClubNameByEventId").
+                    setParameter("idEvent", idEvent).getSingleResult();
         } catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ClubRESTful service: Exception finding users by "
@@ -162,7 +162,7 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
                     ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
-        return clubs;
+        return club;
     }
 
     @Override

@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
             query = "SELECT c FROM Club c JOIN c.events e WHERE e.fecha "
                     + "= :fecha"),
     @NamedQuery(name = "getClubNameByEventId", 
-            query = "SELECT c.nombre FROM Club c JOIN c.events e WHERE e.idEvent "
+            query = "SELECT c FROM Club c JOIN c.events e WHERE e.idEvent "
                     + "= :idEvent"),
 })
 @Entity
