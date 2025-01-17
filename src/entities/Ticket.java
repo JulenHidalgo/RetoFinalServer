@@ -53,9 +53,6 @@ public class Ticket implements Serializable {
     @NotNull
     private String dniComprador;
 
-    @NotNull
-    private Long idEvento;
-
     @Column(name = "dni_asistente")
     private String dniAsistentes;
 
@@ -77,9 +74,8 @@ public class Ticket implements Serializable {
     @ManyToOne
     private User user;
 
-    public Ticket(String dniComprador, Long idEvento, String dniAsistentes, Double importeCompra, Integer cantidad, FormaPago formapago) {
+    public Ticket(String dniComprador, String dniAsistentes, Double importeCompra, Integer cantidad, FormaPago formapago) {
         this.dniComprador = dniComprador;
-        this.idEvento = idEvento;
         this.dniAsistentes = dniAsistentes;
         this.importeCompra = importeCompra;
         this.fechaCompra = valueOf(LocalDate.now());
@@ -112,10 +108,6 @@ public class Ticket implements Serializable {
         return dniComprador;
     }
 
-    public Long getIdEvento() {
-        return idEvento;
-    }
-
     public String getDniAsistentes() {
         return dniAsistentes;
     }
@@ -138,10 +130,6 @@ public class Ticket implements Serializable {
 
     public void setDniComprador(String dniComprador) {
         this.dniComprador = dniComprador;
-    }
-
-    public void setIdEvento(Long idEvento) {
-        this.idEvento = idEvento;
     }
 
     public void setDniAsistentes(String dniAsistentes) {
