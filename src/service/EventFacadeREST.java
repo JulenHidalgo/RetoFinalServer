@@ -7,7 +7,7 @@ package service;
 
 import entities.Artist;
 import entities.Event;
-import java.util.Date;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -124,20 +124,15 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @GET
     @Path("findEventsByDate/{fecha}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Event> findByDate(@PathParam("fecha") String fechalocal) {
+    public List<Event> findByDate(@PathParam("fecha") Date  fechalocal) {
         List<Event> events=null;
         if(fechalocal == null){
               throw new BadRequestException("Los parametros no pueden estar vacios");  
         }
         try {
-            
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate localDate = LocalDate.parse(fechalocal, formatter);
-            Date fecha = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            
-            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fecha);
+            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fechalocal);
             events=em.createNamedQuery("findEventsByDate").
-                    setParameter("fecha", fecha).getResultList();
+                    setParameter("fecha", fechalocal).getResultList();
         } catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading users by profile, {0}",
@@ -148,7 +143,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     }
     
     @GET
-    @Path("findEventsByDates/{de_fecha}/{hasta_fecha}")
+    @Path("findEventsByDates/{fechaIni}/{fechaFin}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Event> findByDates(@PathParam("fechaIni") Date fechaIni, @PathParam("fechaFin") Date fechaFin) {
         List<Event> events=null;

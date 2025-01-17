@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlTransient;
             query = "SELECT e FROM Event e WHERE e.fecha > :fecha"),
     /**sacar los eventos que esten entre las dos fechas*/
     @NamedQuery(name = "findEventsByDates", 
-            query = "SELECT e FROM Event e WHERE e.fecha >:fechaIni AND e.fecha <:fechaFin "),  
+            query = "SELECT e FROM Event e WHERE e.fecha >=:fechaIni AND e.fecha <=:fechaFin "),  
     
 })
 

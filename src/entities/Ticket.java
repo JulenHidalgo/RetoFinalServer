@@ -56,14 +56,8 @@ public class Ticket implements Serializable {
     @NotNull
     private Long idEvento;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "ticket_dni_asistentes", // Nombre de la tabla
-            schema = "nocturna",
-            joinColumns = @JoinColumn(name = "ticket_id") // Llave foránea hacia la tabla principal
-    )
     @Column(name = "dni_asistente")
-    private Set<String> dniAsistentes;
+    private String dniAsistentes;
 
     @NotNull
     private Double importeCompra;
@@ -83,7 +77,7 @@ public class Ticket implements Serializable {
     @ManyToOne
     private User user;
 
-    public Ticket(String dniComprador, Long idEvento, Set<String> dniAsistentes, Double importeCompra, Integer cantidad, FormaPago formapago) {
+    public Ticket(String dniComprador, Long idEvento, String dniAsistentes, Double importeCompra, Integer cantidad, FormaPago formapago) {
         this.dniComprador = dniComprador;
         this.idEvento = idEvento;
         this.dniAsistentes = dniAsistentes;
@@ -122,7 +116,7 @@ public class Ticket implements Serializable {
         return idEvento;
     }
 
-    public Set getDniAsistentes() {
+    public String getDniAsistentes() {
         return dniAsistentes;
     }
 
@@ -150,7 +144,7 @@ public class Ticket implements Serializable {
         this.idEvento = idEvento;
     }
 
-    public void setDniAsistentes(Set dniAsistentes) {
+    public void setDniAsistentes(String dniAsistentes) {
         this.dniAsistentes = dniAsistentes;
     }
 
