@@ -168,7 +168,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
             query.setParameter("passwd", Security.hashText(passwd));
             user=(User) query.getSingleResult();
         }catch(NoResultException ex){
-            log.log(Level.SEVERE, "UserRESTful service: No user found.", ex.getMessage()); 
+            log.log(Level.INFO, "UserRESTful service: Log in failed.", ex.getMessage()); 
             throw new NotFoundException("El email o la contraseña no coinciden");
         } catch (Exception ex) {
             log.log(Level.SEVERE,
