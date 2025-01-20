@@ -52,7 +52,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(User entity) {
-        Query query;
+        super.create(entity);
+        /*Query query;
         User user;
         
         if(entity == null){
@@ -66,6 +67,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
             throw new NotAcceptableException();
         } catch (NoResultException e) {
             try{
+                log.log(Level.SEVERE, entity.getPasswd());
+                log.log(Level.SEVERE, Security.hashText(entity.getPasswd()));
                 entity.setPasswd(Security.hashText(entity.getPasswd()));
                 super.create(entity);
             } catch (Exception ex) {
@@ -77,7 +80,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
-        }
+        }*/
     }
 
     @PUT
@@ -155,9 +158,13 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("login/{mail}/{passwd}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public User login(@PathParam("mail") String mail, @PathParam("passwd") String passwd) throws NotFoundException {
-       User user=null;
+        User user=null;
         Query query;
-        if(mail == null || passwd == null){
+        query=em.createNamedQuery("login");
+        query.setParameter("mail", mail);
+        query.setParameter("passwd", passwd);
+        user=(User) query.getSingleResult();
+        /*if(mail == null || passwd == null){
             log.log(Level.INFO,"UserRESTful service: invalid params {0}.", mail);
             throw new BadRequestException("Los parametros no pueden estar vacios");  
         }
@@ -175,7 +182,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
                     "ArtistRESTful service: Exception reading users by profile, {0}",
                     ex.getMessage());
             throw new InternalServerErrorException(ex);
-        }
+        }*/
         return user;
     }
     

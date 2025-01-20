@@ -66,7 +66,6 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
                 emailExists = true;
             } catch (NoResultException ex) {
                 emailExists = false;
-                log.log(Level.INFO, "UserRESTful service: Email exists .", ex.getMessage());
             }
             if (emailExists == true) {
                 throw new NotAcceptableException();
@@ -77,6 +76,9 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
             throw new NotAcceptableException();
         } catch (NoResultException e) {
             try{
+                log.log(Level.SEVERE, entity.getPasswd());
+                log.log(Level.SEVERE, Security.hashText(entity.getPasswd()));
+                log.log(Level.SEVERE, entity.getMail());
                 entity.setPasswd(Security.hashText(entity.getPasswd()));
                 super.create(entity);
             } catch (Exception ex) {
