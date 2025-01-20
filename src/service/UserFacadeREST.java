@@ -42,7 +42,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
 
     @PersistenceContext(unitName = "NocturnaServerPU")
     private EntityManager em;
-    private static final Logger log = Logger.getLogger(ArtistFacadeREST.class.getName());
+    private static final Logger log = Logger.getLogger(UserFacadeREST.class.getName());
     
     public UserFacadeREST() {
         super(User.class);

@@ -42,7 +42,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
     @PersistenceContext(unitName = "NocturnaServerPU")
     private EntityManager em;
-     private static final Logger log = Logger.getLogger(ArtistFacadeREST.class.getName());
+     private static final Logger log = Logger.getLogger(EventFacadeREST.class.getName());
      
     public EventFacadeREST() {
         super(Event.class);

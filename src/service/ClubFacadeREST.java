@@ -33,7 +33,7 @@ import javax.ws.rs.core.MediaType;
 @Stateless
 @Path("entities.club")
 public class ClubFacadeREST extends AbstractFacade<Club> {
-    private static final Logger log = Logger.getLogger(ArtistFacadeREST.class.getName());
+    private static final Logger log = Logger.getLogger(ClubFacadeREST.class.getName());
 
     @PersistenceContext(unitName = "NocturnaServerPU")
     private EntityManager em;
