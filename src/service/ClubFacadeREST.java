@@ -46,48 +46,83 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Club entity) {
-        super.create(entity);
+        try{
+            super.create(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Club entity) {
-        super.edit(entity);
+        try{
+            super.edit(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+        try{
+            super.remove(super.find(id));
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Club find(@PathParam("id") Long id) {
-        return super.find(id);
+        try{
+            return super.find(id);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Club> findAll() {
-        return super.findAll();
+        try{
+            return super.findAll();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Club> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try{
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try{
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
     
     @GET
