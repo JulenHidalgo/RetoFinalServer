@@ -14,7 +14,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -132,10 +131,6 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
             @PathParam("fechafin") Date fechafin) {
         List<Club> clubs=null;
         Query query;
-        if (fechaIni == null || fechafin == null){
-            throw new BadRequestException("Los parametros de fecha no pueden"
-                    + "estar vacios");
-        }
         try {
             log.log(Level.INFO,"ClubRESTful service: find clubs with events "
                     + "into dates{0}.");
@@ -158,10 +153,6 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Club> getClubsByEventDate(@PathParam("fecha") Date fecha) {
         List<Club> clubs=null;
-        if (fecha == null){
-            throw new BadRequestException("El parametro de fecha no puede"
-                    + "estar vacio");
-        }
         try {
             log.log(Level.INFO,"ClubRESTful service: find clubs with "
                     + "events in one date{0}.");
@@ -182,9 +173,6 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Club getClubNameByEventId(@PathParam("idEvent") Long idEvent) {
         Club club=null;
-        if (idEvent == null){
-            throw new BadRequestException("El evento no puede ser nulo");
-        }
         try {
             log.log(Level.INFO,"ClubRESTful service: find clubs "
                     + "with events into dates{0}.");

@@ -51,11 +51,6 @@ public class AdminFacadeREST extends AbstractFacade<Admin> {
     public void create(Admin entity) {
         Query query;
         User user;
-        
-        if(entity == null){
-            log.log(Level.INFO,"UserRESTful service: invalid params {0}.");
-            throw new BadRequestException("Los parametros no pueden estar vacios");  
-        }
         try{
             query=em.createNamedQuery("getUserByEmail");
             query.setParameter("mail", entity.getMail());

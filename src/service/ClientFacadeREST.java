@@ -15,7 +15,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -53,11 +52,6 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
         User user;
         Client client;
         Boolean emailExists;
-        
-        if(entity == null){
-            log.log(Level.INFO,"UserRESTful service: invalid params {0}.");
-            throw new BadRequestException("Los parametros no pueden estar vacios");  
-        }
         try{
             try{
                 query=em.createNamedQuery("getUserByEmail");

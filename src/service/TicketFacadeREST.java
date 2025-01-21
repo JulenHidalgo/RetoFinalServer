@@ -129,9 +129,6 @@ public class TicketFacadeREST extends AbstractFacade<Ticket> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Ticket> findTicketByUser(@PathParam("dni") String dni) throws NotFoundException {
         List<Ticket> tickets = null;
-        if (dni == null) { 
-            throw new BadRequestException("El parámetro 'idEvent' es obligatorio.");
-        }
         try {
            
             tickets = em.createNamedQuery("findTicketByUser").

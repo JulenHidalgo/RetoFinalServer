@@ -15,7 +15,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -54,11 +53,6 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public void create(User entity) {
         Query query;
         User user;
-        
-        if(entity == null){
-            log.log(Level.INFO,"UserRESTful service: invalid params {0}.");
-            throw new BadRequestException("Los parametros no pueden estar vacios");  
-        }
         try{
             query=em.createNamedQuery("getUserByEmail");
             query.setParameter("mail", entity.getMail());
@@ -172,10 +166,6 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public User login(@PathParam("mail") String mail, @PathParam("passwd") String passwd) throws NotFoundException {
         User user=null;
         Query query;
-        if(mail == null || passwd == null){
-            log.log(Level.INFO,"UserRESTful service: invalid params {0}.", mail);
-            throw new BadRequestException("Los parametros no pueden estar vacios");  
-        }
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", mail);
             query=em.createNamedQuery("login");
@@ -202,11 +192,6 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public void updatePasswd(@PathParam("newPasswd") String newPasswd, User user)  throws NotFoundException {
          Query query;
          String subject, text;
-         
-        if (newPasswd == null || newPasswd.isEmpty()) {
-            log.log(Level.INFO, "UserRESTful service: invalid new password {0}.", newPasswd);
-            throw new BadRequestException("Los parámetros no pueden estar vacíos");
-        }
         try {
             log.log(Level.INFO, "UserRESTful service: updating password for {0}.", newPasswd);
             user.setPasswd(Security.hashText(newPasswd));
@@ -234,15 +219,10 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void resetPassword(@PathParam("userEmail") String userEmail) throws NotFoundException {
-         Query query;
-         User user;
-         String pass;
-         String subject, text;
-         
-        if (userEmail == null || userEmail.isEmpty()) {
-            log.log(Level.INFO, "UserRESTful service: invalid new password {0}.", userEmail);
-            throw new BadRequestException("Los parámetros no pueden estar vacíos");
-        }
+        Query query;
+        User user;
+        String pass;
+        String subject, text;
         try {
             query=em.createNamedQuery("getUserByEmail");
             query.setParameter("mail", userEmail);
