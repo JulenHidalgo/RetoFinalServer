@@ -52,8 +52,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(User entity) {
-        super.create(entity);
-        /*Query query;
+        Query query;
         User user;
         
         if(entity == null){
@@ -80,7 +79,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
-        }*/
+        }
     }
 
     @PUT
@@ -110,8 +109,11 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public User find(@PathParam("id") Long id) {
+        User user;
         try{
-            return super.find(id);
+            user = super.find(id);
+            user.setPasswd("");
+            return user;
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -122,8 +124,13 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<User> findAll() {
+        List<User> users;
         try{
-            return super.findAll();
+            users = super.findAll();
+            for (User user : users) {
+                user.setPasswd("");
+            }
+            return users;
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -134,8 +141,13 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<User> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+        List<User> users;
         try{
-            return super.findRange(new int[]{from, to});
+            users = super.findRange(new int[]{from, to});
+            for (User user : users) {
+                user.setPasswd("");
+            }
+            return users;
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -160,11 +172,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public User login(@PathParam("mail") String mail, @PathParam("passwd") String passwd) throws NotFoundException {
         User user=null;
         Query query;
-        query=em.createNamedQuery("login");
-        query.setParameter("mail", mail);
-        query.setParameter("passwd", passwd);
-        user=(User) query.getSingleResult();
-        /*if(mail == null || passwd == null){
+        if(mail == null || passwd == null){
             log.log(Level.INFO,"UserRESTful service: invalid params {0}.", mail);
             throw new BadRequestException("Los parametros no pueden estar vacios");  
         }
@@ -182,7 +190,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
                     "ArtistRESTful service: Exception reading users by profile, {0}",
                     ex.getMessage());
             throw new InternalServerErrorException(ex);
-        }*/
+        }
+        user.setPasswd("");
         return user;
     }
     

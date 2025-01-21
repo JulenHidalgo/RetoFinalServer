@@ -95,7 +95,6 @@ public class User implements Serializable {
         this.isAdmin = isAdmin;
     }
 
-    @XmlTransient
     public String getPasswd() {
         return passwd;
     }
