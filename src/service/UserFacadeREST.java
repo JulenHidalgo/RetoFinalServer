@@ -182,12 +182,12 @@ public class UserFacadeREST extends AbstractFacade<User> {
          Query query;
          String subject, text;
         try {
-            log.log(Level.INFO, "UserRESTful service: updating password for {0}.", newPasswd);
+            log.log(Level.INFO, "UserRESTful service: updating password for {0}.", user.getMail());
             user.setPasswd(Security.hashText(newPasswd));
             super.edit(user);
             subject = "Solicitud de cambio de contraseña";
             text = "El cambio de contraseña solicitado ha sido un exito";
-            Smtp.sendEmail(user.getMail(), newPasswd, subject, text);
+            Smtp.sendEmail(user.getMail(), subject, text);
         } catch (NoResultException ex) {
             log.log(Level.SEVERE, "UserRESTful service: No user found.", ex.getMessage());
             throw new NotFoundException("El correo no coincide con ningun usuario");
@@ -222,7 +222,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
             super.edit(user);
             subject = "Solicitud de restablecimiento de contraseña";
             text = "Su nueva contraseña es: " + pass;
-            Smtp.sendEmail(user.getMail(), pass, subject, text);
+            Smtp.sendEmail(user.getMail(), subject, text);
         } catch (NoResultException ex) {
             log.log(Level.INFO, "UserRESTful service: No user found {0}.", ex.getMessage());
             throw new NotFoundException("El correo no coincide con ningun usuario");

@@ -26,8 +26,8 @@ public class Smtp {
     static String PASSWORD;
     static Properties props;
     
-    public static void sendEmail(String receiver, String newPass,
-            String subject, String text) throws Exception {
+    public static void sendEmail(String receiver, String subject, 
+            String text) throws Exception {
         setSmtpData();
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
