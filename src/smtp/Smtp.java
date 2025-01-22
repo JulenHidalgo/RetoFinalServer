@@ -19,7 +19,6 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
-import security.CriptografiaSimetrica;
 import security.Security;
 
 public class Smtp {
@@ -63,7 +62,7 @@ public class Smtp {
     }
 
     private static void setFilePropData() {
-        EMAIL = CriptografiaSimetrica.descifrarTexto("Codorniz", "EMAIL");
+        EMAIL = Security.descifrarTexto("Codorniz", "EMAIL");
         PASSWORD = Security.descifrarTexto("Codorniz", "PASSWORD");
         //EMAIL = "nocturnatartanga@gmail.com";
         //PASSWORD = "thhi lskx wkwe cnsm";

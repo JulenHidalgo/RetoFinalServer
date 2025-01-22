@@ -103,11 +103,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public User find(@PathParam("id") Long id) {
-        User user;
         try{
-            user = super.find(id);
-            user.setPasswd("");
-            return user;
+            return super.find(id);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -118,13 +115,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<User> findAll() {
-        List<User> users;
         try{
-            users = super.findAll();
-            for (User user : users) {
-                user.setPasswd("");
-            }
-            return users;
+            return super.findAll();
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -135,13 +127,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<User> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        List<User> users;
         try{
-            users = super.findRange(new int[]{from, to});
-            for (User user : users) {
-                user.setPasswd("");
-            }
-            return users;
+            return super.findRange(new int[]{from, to});
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -165,9 +152,12 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public User login(@PathParam("mail") String mail, @PathParam("passwd") String passwd) throws NotFoundException {
         User user=null;
+        User userRET=null;
         Query query;
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", mail);
+            System.out.println(mail);
+            System.out.println(Security.hashText(passwd));
             query=em.createNamedQuery("login");
             query.setParameter("mail", mail);
             query.setParameter("passwd", Security.hashText(passwd));
@@ -181,7 +171,6 @@ public class UserFacadeREST extends AbstractFacade<User> {
                     ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
-        user.setPasswd("");
         return user;
     }
     

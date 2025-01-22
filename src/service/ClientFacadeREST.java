@@ -114,11 +114,8 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Client find(@PathParam("id") Long id) {
-        Client client;
         try{
-            client = super.find(id);
-            client.setPasswd("");
-            return client;
+            return super.find(id);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -129,13 +126,8 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Client> findAll() {
-        List<Client> clients;
         try{
-            clients = super.findAll();
-            for (Client client : clients) {
-                client.setPasswd("");
-            }
-            return clients;
+            return super.findAll();
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -146,13 +138,8 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Client> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        List<Client> clients;
         try{
-            clients = super.findRange(new int[]{from, to});
-            for (Client client : clients) {
-                client.setPasswd("");
-            }
-            return clients;
+            return super.findRange(new int[]{from, to});
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);

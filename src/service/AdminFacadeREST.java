@@ -99,11 +99,8 @@ public class AdminFacadeREST extends AbstractFacade<Admin> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Admin find(@PathParam("id") Long id) {
-        Admin admin;
         try{
-            admin = super.find(id);
-            admin.setPasswd("");
-            return admin;
+            return super.find(id);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -114,13 +111,8 @@ public class AdminFacadeREST extends AbstractFacade<Admin> {
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Admin> findAll() {
-        List<Admin> admins;
         try{
-            admins = super.findAll();
-            for (Admin admin : admins) {
-                admin.setPasswd("");
-            }
-            return admins;
+            return super.findAll();
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -131,13 +123,8 @@ public class AdminFacadeREST extends AbstractFacade<Admin> {
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Admin> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        List<Admin> admins;
         try{
-            admins = super.findRange(new int[]{from, to});
-            for (Admin admin : admins) {
-                admin.setPasswd("");
-            }
-            return admins;
+            return super.findRange(new int[]{from, to});
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
