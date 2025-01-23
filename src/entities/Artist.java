@@ -47,7 +47,7 @@ public class Artist implements Serializable {
     protected String tipoMusica = "";
     protected String descripcion = "";
 
-    @ManyToMany(mappedBy = "artists", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "artists")
     protected Set<Event> events;
 
     public Artist() {
