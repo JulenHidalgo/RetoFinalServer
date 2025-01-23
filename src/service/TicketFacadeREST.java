@@ -35,6 +35,7 @@ public class TicketFacadeREST extends AbstractFacade<Ticket> {
 
     @PersistenceContext(unitName = "NocturnaServerPU")
     private EntityManager em;
+    private static final Logger log = Logger.getLogger(TicketFacadeREST.class.getName());
 
     public TicketFacadeREST() {
         super(Ticket.class);
@@ -44,48 +45,83 @@ public class TicketFacadeREST extends AbstractFacade<Ticket> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Ticket entity) {
-        super.create(entity);
+        try{
+            super.create(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Ticket entity) {
-        super.edit(entity);
+        try{
+            super.edit(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+        try{
+            super.remove(super.find(id));
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Ticket find(@PathParam("id") Long id) {
-        return super.find(id);
+        try{
+            return super.find(id);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Ticket> findAll() {
-        return super.findAll();
+        try{
+            return super.findAll();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Ticket> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try{
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try{
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
      @GET
@@ -93,9 +129,6 @@ public class TicketFacadeREST extends AbstractFacade<Ticket> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Ticket> findTicketByUser(@PathParam("dni") String dni) throws NotFoundException {
         List<Ticket> tickets = null;
-        if (dni == null) { 
-            throw new BadRequestException("El parámetro 'idEvent' es obligatorio.");
-        }
         try {
            
             tickets = em.createNamedQuery("findTicketByUser").

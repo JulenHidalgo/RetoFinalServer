@@ -19,7 +19,6 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
-import security.CriptografiaSimetrica;
 import security.Security;
 
 public class Smtp {
@@ -27,8 +26,8 @@ public class Smtp {
     static String PASSWORD;
     static Properties props;
     
-    public static void sendEmail(String receiver, String newPass,
-            String subject, String text) throws Exception {
+    public static void sendEmail(String receiver, String subject, 
+            String text) throws Exception {
         setSmtpData();
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
@@ -63,7 +62,7 @@ public class Smtp {
     }
 
     private static void setFilePropData() {
-        EMAIL = CriptografiaSimetrica.descifrarTexto("Codorniz", "EMAIL");
+        EMAIL = Security.descifrarTexto("Codorniz", "EMAIL");
         PASSWORD = Security.descifrarTexto("Codorniz", "PASSWORD");
         //EMAIL = "nocturnatartanga@gmail.com";
         //PASSWORD = "thhi lskx wkwe cnsm";

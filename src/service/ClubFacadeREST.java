@@ -14,7 +14,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -33,7 +32,7 @@ import javax.ws.rs.core.MediaType;
 @Stateless
 @Path("entities.club")
 public class ClubFacadeREST extends AbstractFacade<Club> {
-    private static final Logger log = Logger.getLogger(ArtistFacadeREST.class.getName());
+    private static final Logger log = Logger.getLogger(ClubFacadeREST.class.getName());
 
     @PersistenceContext(unitName = "NocturnaServerPU")
     private EntityManager em;
@@ -46,48 +45,83 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Club entity) {
-        super.create(entity);
+        try{
+            super.create(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Club entity) {
-        super.edit(entity);
+        try{
+            super.edit(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+        try{
+            super.remove(super.find(id));
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Club find(@PathParam("id") Long id) {
-        return super.find(id);
+        try{
+            return super.find(id);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Club> findAll() {
-        return super.findAll();
+        try{
+            return super.findAll();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Club> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try{
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try{
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
     
     @GET
@@ -97,10 +131,6 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
             @PathParam("fechafin") Date fechafin) {
         List<Club> clubs=null;
         Query query;
-        if (fechaIni == null || fechafin == null){
-            throw new BadRequestException("Los parametros de fecha no pueden"
-                    + "estar vacios");
-        }
         try {
             log.log(Level.INFO,"ClubRESTful service: find clubs with events "
                     + "into dates{0}.");
@@ -123,10 +153,6 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Club> getClubsByEventDate(@PathParam("fecha") Date fecha) {
         List<Club> clubs=null;
-        if (fecha == null){
-            throw new BadRequestException("El parametro de fecha no puede"
-                    + "estar vacio");
-        }
         try {
             log.log(Level.INFO,"ClubRESTful service: find clubs with "
                     + "events in one date{0}.");
@@ -147,9 +173,6 @@ public class ClubFacadeREST extends AbstractFacade<Club> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Club getClubNameByEventId(@PathParam("idEvent") Long idEvent) {
         Club club=null;
-        if (idEvent == null){
-            throw new BadRequestException("El evento no puede ser nulo");
-        }
         try {
             log.log(Level.INFO,"ClubRESTful service: find clubs "
                     + "with events into dates{0}.");

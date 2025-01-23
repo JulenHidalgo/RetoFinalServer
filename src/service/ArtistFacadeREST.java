@@ -45,48 +45,83 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Artist entity) {
-        super.create(entity);
+        try{
+            super.create(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Artist entity) {
-        super.edit(entity);
+        try{
+            super.edit(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+        try{
+            super.remove(super.find(id));
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Artist find(@PathParam("id") Long id) {
-        return super.find(id);
+        try{
+            return super.find(id);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Artist> findAll() {
-        return super.findAll();
+        try{
+            return super.findAll();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Artist> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try{
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try{
+             return String.valueOf(super.count());
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
@@ -106,6 +141,7 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
         } catch (BadRequestException e) {
             log.log(Level.SEVERE, "ArtistRESTful service: BadRequestException reading artist/artistsByEvent/{0}", idEvent);
             throw new BadRequestException(e);
+
         } catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading artists that are related to an id of an Event, {0}",
@@ -126,16 +162,7 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
             log.log(Level.INFO, "ArtistRESTful service: reading artists that are not related to an id of an Event, {0}", idEvent);
             artists = em.createNamedQuery("findArtistsNotByEvent").
                     setParameter("idEvent", idEvent).getResultList();
-            if (artists == null || artists.isEmpty()) {
-                throw new NotFoundException();
-            }
-        } catch (NotFoundException e) {
-            log.log(Level.INFO, "ArtistRESTful service: NotFoundException reading artist/artistsNotByEvent/{0}", idEvent);
-            throw new NotFoundException(e);
-        } catch (BadRequestException e) {
-            log.log(Level.SEVERE, "ArtistRESTful service: BadRequestException reading artist/artistsNotByEvent/{0}", idEvent);
-            throw new BadRequestException(e);
-        } catch (Exception ex) {
+            } catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading artist/artistsNotByEvent/{0}",
                     ex.getMessage());

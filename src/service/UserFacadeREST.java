@@ -15,7 +15,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -42,7 +41,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
 
     @PersistenceContext(unitName = "NocturnaServerPU")
     private EntityManager em;
-    private static final Logger log = Logger.getLogger(ArtistFacadeREST.class.getName());
+    private static final Logger log = Logger.getLogger(UserFacadeREST.class.getName());
     
     public UserFacadeREST() {
         super(User.class);
@@ -54,11 +53,6 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public void create(User entity) {
         Query query;
         User user;
-        
-        if(entity == null){
-            log.log(Level.INFO,"UserRESTful service: invalid params {0}.");
-            throw new BadRequestException("Los parametros no pueden estar vacios");  
-        }
         try{
             query=em.createNamedQuery("getUserByEmail");
             query.setParameter("mail", entity.getMail());
@@ -66,6 +60,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
             throw new NotAcceptableException();
         } catch (NoResultException e) {
             try{
+                log.log(Level.SEVERE, entity.getPasswd());
+                log.log(Level.SEVERE, Security.hashText(entity.getPasswd()));
                 entity.setPasswd(Security.hashText(entity.getPasswd()));
                 super.create(entity);
             } catch (Exception ex) {
@@ -84,61 +80,90 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, User entity) {
-        super.edit(entity);
+        try{
+            super.edit(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+        try{
+            super.remove(super.find(id));
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public User find(@PathParam("id") Long id) {
-        return super.find(id);
+        try{
+            return super.find(id);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<User> findAll() {
-        return super.findAll();
+        try{
+            return super.findAll();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<User> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try{
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try{
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
     
     @GET
     @Path("login/{mail}/{passwd}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public User login(@PathParam("mail") String mail, @PathParam("passwd") String passwd) throws NotFoundException {
-       User user=null;
+        User user=null;
+        User userRET=null;
         Query query;
-        if(mail == null || passwd == null){
-            log.log(Level.INFO,"UserRESTful service: invalid params {0}.", mail);
-            throw new BadRequestException("Los parametros no pueden estar vacios");  
-        }
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", mail);
+            System.out.println(mail);
+            System.out.println(Security.hashText(passwd));
             query=em.createNamedQuery("login");
             query.setParameter("mail", mail);
             query.setParameter("passwd", Security.hashText(passwd));
             user=(User) query.getSingleResult();
         }catch(NoResultException ex){
-            log.log(Level.SEVERE, "UserRESTful service: No user found.", ex.getMessage()); 
+            log.log(Level.INFO, "UserRESTful service: Log in failed.", ex.getMessage()); 
             throw new NotFoundException("El email o la contraseña no coinciden");
         } catch (Exception ex) {
             log.log(Level.SEVERE,
@@ -156,18 +181,13 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public void updatePasswd(@PathParam("newPasswd") String newPasswd, User user)  throws NotFoundException {
          Query query;
          String subject, text;
-         
-        if (newPasswd == null || newPasswd.isEmpty()) {
-            log.log(Level.INFO, "UserRESTful service: invalid new password {0}.", newPasswd);
-            throw new BadRequestException("Los parámetros no pueden estar vacíos");
-        }
         try {
-            log.log(Level.INFO, "UserRESTful service: updating password for {0}.", newPasswd);
+            log.log(Level.INFO, "UserRESTful service: updating password for {0}.", user.getMail());
             user.setPasswd(Security.hashText(newPasswd));
             super.edit(user);
             subject = "Solicitud de cambio de contraseña";
             text = "El cambio de contraseña solicitado ha sido un exito";
-            Smtp.sendEmail(user.getMail(), newPasswd, subject, text);
+            Smtp.sendEmail(user.getMail(), subject, text);
         } catch (NoResultException ex) {
             log.log(Level.SEVERE, "UserRESTful service: No user found.", ex.getMessage());
             throw new NotFoundException("El correo no coincide con ningun usuario");
@@ -188,15 +208,10 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void resetPassword(@PathParam("userEmail") String userEmail) throws NotFoundException {
-         Query query;
-         User user;
-         String pass;
-         String subject, text;
-         
-        if (userEmail == null || userEmail.isEmpty()) {
-            log.log(Level.INFO, "UserRESTful service: invalid new password {0}.", userEmail);
-            throw new BadRequestException("Los parámetros no pueden estar vacíos");
-        }
+        Query query;
+        User user;
+        String pass;
+        String subject, text;
         try {
             query=em.createNamedQuery("getUserByEmail");
             query.setParameter("mail", userEmail);
@@ -207,9 +222,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
             super.edit(user);
             subject = "Solicitud de restablecimiento de contraseña";
             text = "Su nueva contraseña es: " + pass;
-            Smtp.sendEmail(user.getMail(), pass, subject, text);
+            Smtp.sendEmail(user.getMail(), subject, text);
         } catch (NoResultException ex) {
-            log.log(Level.SEVERE, "UserRESTful service: No user found {0}.", ex.getMessage());
+            log.log(Level.INFO, "UserRESTful service: No user found {0}.", ex.getMessage());
             throw new NotFoundException("El correo no coincide con ningun usuario");
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());

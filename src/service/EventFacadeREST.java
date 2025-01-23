@@ -5,19 +5,14 @@
  */
 package service;
 
-import entities.Artist;
 import entities.Event;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javassist.NotFoundException;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NamedQuery;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.ws.rs.BadRequestException;
@@ -42,7 +37,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
     @PersistenceContext(unitName = "NocturnaServerPU")
     private EntityManager em;
-     private static final Logger log = Logger.getLogger(ArtistFacadeREST.class.getName());
+     private static final Logger log = Logger.getLogger(EventFacadeREST.class.getName());
      
     public EventFacadeREST() {
         super(Event.class);
@@ -52,48 +47,83 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Event entity) {
-        super.create(entity);
+        try{
+            super.create(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Event entity) {
-        super.edit(entity);
+        try{
+            super.edit(entity);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+        try{
+            super.remove(super.find(id));
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Event find(@PathParam("id") Long id) {
-        return super.find(id);
+        try{
+            return super.find(id);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Event> findAll() {
-        return super.findAll();
+        try{
+            return super.findAll();
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Event> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try{
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try{
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
     
     
@@ -102,10 +132,12 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Event> findByArtist(@PathParam("idArtist") Long idArtist) {
         List<Event> events=null;
+
         Query query;
         if(idArtist == null){
               throw new BadRequestException("Los parametros no pueden estar vacios");  
         }
+
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", idArtist);         
             query=em.createNamedQuery("findEventsByArtist");
@@ -130,9 +162,6 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Event> findByDate(@PathParam("fecha") Date  fechalocal) {
         List<Event> events=null;
-        if(fechalocal == null){
-              throw new BadRequestException("Los parametros no pueden estar vacios");  
-        }
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fechalocal);
             events=em.createNamedQuery("findEventsByDate").
@@ -155,10 +184,6 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     public List<Event> findByDates(@PathParam("fechaIni") Date fechaIni, @PathParam("fechaFin") Date fechaFin) {
         List<Event> events=null;
         Query query;
-        if(fechaIni == null || fechaFin == null){
-            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fechaIni);
-              throw new BadRequestException("Los parametros no pueden estar vacios");  
-        }
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fechaIni);
             query=em.createNamedQuery("findEventsByDates");
