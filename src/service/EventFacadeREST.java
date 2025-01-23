@@ -102,16 +102,20 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Event> findByArtist(@PathParam("idArtist") Long idArtist) {
         List<Event> events=null;
+        Query query;
         if(idArtist == null){
               throw new BadRequestException("Los parametros no pueden estar vacios");  
         }
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", idArtist);         
-            events=em.createNamedQuery("findEventsByArtist").
-                    setParameter("idArtist", idArtist).getResultList();
-            if(events.isEmpty()){
-              throw new NotFoundException("No hay eventos con el codigo de artista"+idArtist);
-        }
+            query=em.createNamedQuery("findEventsByArtist");
+            query.setParameter("idArtist", idArtist);
+            query.setParameter("fecha", Date.valueOf(LocalDate.now()));
+          
+            events=query.getResultList();
+        }catch (javax.ws.rs.NotFoundException e) {
+            log.log(Level.INFO, "EventRESTful service: NotFoundException reading artist/artistsNotByEvent/{0}", idArtist);
+            throw new javax.ws.rs.NotFoundException(e);
         } catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading users by profile, {0}",
@@ -133,7 +137,10 @@ public class EventFacadeREST extends AbstractFacade<Event> {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", fechalocal);
             events=em.createNamedQuery("findEventsByDate").
                     setParameter("fecha", fechalocal).getResultList();
-        } catch (Exception ex) {
+        }catch (javax.ws.rs.NotFoundException e) {
+            log.log(Level.INFO, "EventRESTful service: NotFoundException reading artist/artistsNotByEvent/{0}", fechalocal);
+            throw new javax.ws.rs.NotFoundException(e);
+        }  catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading users by profile, {0}",
                     ex.getMessage());
@@ -158,7 +165,10 @@ public class EventFacadeREST extends AbstractFacade<Event> {
             query.setParameter("fechaIni", fechaIni);
             query.setParameter("fechaFin", fechaFin);
             events=query.getResultList();
-        } catch (Exception ex) {
+        }catch (javax.ws.rs.NotFoundException e) {
+            log.log(Level.INFO, "EventRESTful service: NotFoundException reading artist/artistsNotByEvent/{0}", fechaIni);
+            throw new javax.ws.rs.NotFoundException(e);
+        }  catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading users by profile, {0}",
                     ex.getMessage());

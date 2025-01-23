@@ -90,7 +90,7 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     }
 
     @GET
-    @Path("artistsByEvent/{idEvent}")
+    @Path("findArtistsByEvent/{idEvent}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Artist> findByEvent(@PathParam("idEvent") Long idEvent) {
         List<Artist> artists = null;
@@ -99,9 +99,7 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
             log.log(Level.INFO, "ArtistRESTful service: reading artists that are related to an id of an Event, {0}", idEvent);
             artists = em.createNamedQuery("findArtistsByEvent").
                     setParameter("idEvent", idEvent).getResultList();
-            if (artists == null || artists.isEmpty()) {
-                throw new NotFoundException();
-            }
+            
         } catch (NotFoundException e) {
             log.log(Level.INFO, "ArtistRESTful service: NotFoundException, there are not artists related to that Event, {0}", idEvent);
             throw new NotFoundException(e);

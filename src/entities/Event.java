@@ -10,6 +10,7 @@ import static java.sql.Date.valueOf;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import static javax.persistence.CascadeType.ALL;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,6 +27,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.validation.constraints.Future;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -38,10 +40,10 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     /**sacar loseventos donde actua un artista introducido*/
     @NamedQuery(name = "findEventsByArtist", 
-            query = "SELECT e FROM Event e JOIN  e.artists a WHERE a.idArtist = :idArtist"),
+            query = "SELECT e FROM Event e JOIN  e.artists a WHERE a.idArtist = :idArtist and e.fecha >= :fecha"),
     /**sacar los eventos que sean en esa fecha*/
     @NamedQuery(name = "findEventsByDate", 
-            query = "SELECT e FROM Event e WHERE e.fecha > :fecha"),
+            query = "SELECT e FROM Event e WHERE e.fecha >= :fecha"),
     /**sacar los eventos que esten entre las dos fechas*/
     @NamedQuery(name = "findEventsByDates", 
             query = "SELECT e FROM Event e WHERE e.fecha >=:fechaIni AND e.fecha <=:fechaFin "),  
@@ -76,7 +78,7 @@ public class Event implements Serializable {
     @JoinColumn(name="club")
     private Club club; 
     
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinTable(name="artist_event", schema="nocturna", joinColumns = @JoinColumn(name="event_idEvent", referencedColumnName="idEvent"),
             inverseJoinColumns = @JoinColumn(name="artist_idArtist", referencedColumnName="idArtist"))
     private Set<Artist> artists;
@@ -138,7 +140,7 @@ public class Event implements Serializable {
     public void setPrecioEntrada(Double precioEntrada) {
         this.precioEntrada = precioEntrada;
     }
- 
+    
     public Club getClub(){
        return this.club;    
     }
@@ -147,11 +149,11 @@ public class Event implements Serializable {
         this.club = club;
     }
     
-
-    public Set<Artist> getArtits(){
+    
+    public Set<Artist> getArtists(){
        return  this.artists;     
     }
-
+    
     public void setArtists(Set<Artist> artists) {
         this.artists = artists;
     }
