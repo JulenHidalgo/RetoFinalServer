@@ -31,6 +31,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Security {
     private static final Logger log = Logger.getLogger(Security.class.getName());
+    private static final byte[] salt = "palabras aleatorias".getBytes();
     public static String hashText(String text) {
         try {
             //Se instancia la clase que hashea la contrasena
@@ -53,9 +54,48 @@ public class Security {
         }
     }
     
+    public static String cifrarTexto(String clave, String mensaje) {
+        String ret = null;
+        KeySpec derivedKey = null;
+        SecretKeyFactory secretKeyFactory = null;
+        StringBuilder hexStringBuilder = null;
+        try {
+            derivedKey = new PBEKeySpec(clave.toCharArray(), salt, 65536, 128); 
+            secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+             
+            byte[] derivedKeyPBK = secretKeyFactory.generateSecret(derivedKey).getEncoded();
+                     
+            SecretKey derivedKeyPBK_AES = new SecretKeySpec(derivedKeyPBK, 0, derivedKeyPBK.length, "AES");
+          
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");	    
+            cipher.init(Cipher.ENCRYPT_MODE, derivedKeyPBK_AES);
+            byte[] encodedMessage = cipher.doFinal(mensaje.getBytes()); // Mensaje cifrado !!!
+            byte[] iv = cipher.getIV(); // vector de inicializaci�n  
+             
+            // Añadimos el vector de inicialización
+            byte[] combined = concatArrays(iv, encodedMessage);
+
+            hexStringBuilder = new StringBuilder();
+            for (byte b : combined) {
+                String hex = String.format("%02X", b);
+                hexStringBuilder.append(hex);
+            }
+
+        } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e) {
+            
+        }
+        return hexStringBuilder.toString();
+    }
+    
+    private static byte[] concatArrays(byte[] array1, byte[] array2) {
+        byte[] ret = new byte[array1.length + array2.length];
+        System.arraycopy(array1, 0, ret, 0, array1.length);
+        System.arraycopy(array2, 0, ret, array1.length, array2.length);
+        return ret;
+    }
+    
     public static String descifrarTexto(String clave, String fileProp) {
         String ret = null;
-        byte[] salt = "palabras aleatorias".getBytes();
         ResourceBundle fichConf = ResourceBundle.getBundle("smtp.smtpCredentials");
         String email = fichConf.getString(fileProp);
         byte[] fileContent = new byte[email.length() / 2];
