@@ -7,6 +7,7 @@ package entities;
 
 import java.io.Serializable;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -46,7 +47,7 @@ public class Artist implements Serializable {
     protected String tipoMusica = "";
     protected String descripcion = "";
 
-    @ManyToMany(mappedBy = "artists", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "artists")
     protected Set<Event> events;
 
     public Artist() {
@@ -89,8 +90,8 @@ public class Artist implements Serializable {
     public Set<Event> getEvents() {
         return events;
     }
-
-    public void getEvents(Set<Event> events) {
+    
+    public void setEvents(Set<Event> events) {
         this.events = events;
     }
 
