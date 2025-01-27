@@ -21,6 +21,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.logging.Logger;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
@@ -45,7 +47,7 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Artist entity) {
-        try{
+        try {
             super.create(entity);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -57,7 +59,7 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Artist entity) {
-        try{
+        try {
             super.edit(entity);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -68,7 +70,8 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        try{
+        try {
+            em.createNativeQuery("DELETE FROM nocturna.artist_event WHERE artist_idArtist = :artistId").setParameter("artistId", id).executeUpdate();
             super.remove(super.find(id));
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -80,7 +83,7 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Artist find(@PathParam("id") Long id) {
-        try{
+        try {
             return super.find(id);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -92,7 +95,7 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Artist> findAll() {
-        try{
+        try {
             return super.findAll();
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -104,7 +107,7 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Artist> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        try{
+        try {
             return super.findRange(new int[]{from, to});
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -116,8 +119,8 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        try{
-             return String.valueOf(super.count());
+        try {
+            return String.valueOf(super.count());
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -134,7 +137,7 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
             log.log(Level.INFO, "ArtistRESTful service: reading artists that are related to an id of an Event, {0}", idEvent);
             artists = em.createNamedQuery("findArtistsByEvent").
                     setParameter("idEvent", idEvent).getResultList();
-            
+
         } catch (NotFoundException e) {
             log.log(Level.INFO, "ArtistRESTful service: NotFoundException, there are not artists related to that Event, {0}", idEvent);
             throw new NotFoundException(e);
@@ -162,7 +165,11 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
             log.log(Level.INFO, "ArtistRESTful service: reading artists that are not related to an id of an Event, {0}", idEvent);
             artists = em.createNamedQuery("findArtistsNotByEvent").
                     setParameter("idEvent", idEvent).getResultList();
-            } catch (Exception ex) {
+        } catch (NoResultException ex) {
+            log.log(Level.SEVERE, "UserRESTful service: No user found.", ex.getMessage());
+            throw new NotFoundException("El artista no tiene ningun evento asociado");
+
+        } catch (Exception ex) {
             log.log(Level.SEVERE,
                     "ArtistRESTful service: Exception reading artist/artistsNotByEvent/{0}",
                     ex.getMessage());

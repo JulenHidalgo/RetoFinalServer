@@ -78,7 +78,7 @@ public class Event implements Serializable {
     @JoinColumn(name="club")
     private Club club; 
     
-    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="artist_event", schema="nocturna", joinColumns = @JoinColumn(name="event_idEvent", referencedColumnName="idEvent"),
             inverseJoinColumns = @JoinColumn(name="artist_idArtist", referencedColumnName="idArtist"))
     private Set<Artist> artists;
