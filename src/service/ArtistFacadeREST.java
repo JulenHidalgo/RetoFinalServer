@@ -22,8 +22,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 
@@ -73,6 +71,9 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
         try {
             em.createNativeQuery("DELETE FROM nocturna.artist_event WHERE artist_idArtist = :artistId").setParameter("artistId", id).executeUpdate();
             super.remove(super.find(id));
+        } catch (NoResultException ex) {
+            log.log(Level.INFO, "The Artist tried to delete is not on the DB, Artist {0}", id);
+            throw new NotFoundException(ex.getMessage());
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
@@ -85,8 +86,13 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     public Artist find(@PathParam("id") Long id) {
         try {
             return super.find(id);
+        } catch (NoResultException e) {
+            log.log(Level.INFO, "There is not an Artist related no the id {0}", id);
+            throw new NotFoundException(e.getMessage());
         } catch (Exception ex) {
-            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            log.log(Level.SEVERE,
+                    "An exception ocurred while getting the Artists related to an id",
+                    ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
     }
@@ -97,10 +103,16 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     public List<Artist> findAll() {
         try {
             return super.findAll();
+        } catch (NoResultException e) {
+            log.log(Level.INFO, "There is not any Artist on the DB");
+            throw new NotFoundException(e.getMessage());
         } catch (Exception ex) {
-            log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            log.log(Level.SEVERE,
+                    "An exception ocurred while getting all the Artists",
+                    ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
+
     }
 
     @GET
@@ -132,22 +144,17 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Artist> findByEvent(@PathParam("idEvent") Long idEvent) {
         List<Artist> artists = null;
-
         try {
             log.log(Level.INFO, "ArtistRESTful service: reading artists that are related to an id of an Event, {0}", idEvent);
             artists = em.createNamedQuery("findArtistsByEvent").
                     setParameter("idEvent", idEvent).getResultList();
 
-        } catch (NotFoundException e) {
-            log.log(Level.INFO, "ArtistRESTful service: NotFoundException, there are not artists related to that Event, {0}", idEvent);
-            throw new NotFoundException(e);
-        } catch (BadRequestException e) {
-            log.log(Level.SEVERE, "ArtistRESTful service: BadRequestException reading artist/artistsByEvent/{0}", idEvent);
-            throw new BadRequestException(e);
-
+        } catch (NoResultException e) {
+            log.log(Level.INFO, "ArtistRESTful service: NotFoundException, there are not artists related to Event, {0}", idEvent);
+            throw new NotFoundException(e.getMessage());
         } catch (Exception ex) {
             log.log(Level.SEVERE,
-                    "ArtistRESTful service: Exception reading artists that are related to an id of an Event, {0}",
+                    "ArtistRESTful service: Exception reading artists that are related to the Event, {0} ",
                     ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
@@ -159,19 +166,17 @@ public class ArtistFacadeREST extends AbstractFacade<Artist> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Artist> findNotByEvent(@PathParam("idEvent") Long idEvent) {
         List<Artist> artists = null;
-
         try {
-
-            log.log(Level.INFO, "ArtistRESTful service: reading artists that are not related to an id of an Event, {0}", idEvent);
+            log.log(Level.INFO, "ArtistRESTful service: reading artists that are NOT related to an id of an Event, {0}", idEvent);
             artists = em.createNamedQuery("findArtistsNotByEvent").
                     setParameter("idEvent", idEvent).getResultList();
-        } catch (NoResultException ex) {
-            log.log(Level.SEVERE, "UserRESTful service: No user found.", ex.getMessage());
-            throw new NotFoundException("El artista no tiene ningun evento asociado");
 
+        } catch (NoResultException e) {
+            log.log(Level.INFO, "ArtistRESTful service: NotFoundException, there are NOT artists not related to Event, {0}", idEvent);
+            throw new NotFoundException(e.getMessage());
         } catch (Exception ex) {
             log.log(Level.SEVERE,
-                    "ArtistRESTful service: Exception reading artist/artistsNotByEvent/{0}",
+                    "ArtistRESTful service: Exception reading artists that are NOT related to the Event, {0} ",
                     ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
