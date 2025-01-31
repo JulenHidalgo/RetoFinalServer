@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
         query = "SELECT a FROM Artist a JOIN a.events e WHERE e.idEvent = :idEvent"),
     @NamedQuery(name = "findArtistsNotByEvent",
         query = "SELECT a FROM Artist a LEFT JOIN a.events e WHERE e.idEvent <> :idEvent OR e.idEvent IS NULL"),
+    
 })
 
 @Entity
@@ -47,7 +48,7 @@ public class Artist implements Serializable {
     protected String tipoMusica = "";
     protected String descripcion = "";
 
-    @ManyToMany(mappedBy = "artists", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "artists")
     protected Set<Event> events;
 
     public Artist() {

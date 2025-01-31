@@ -64,7 +64,5 @@ public class Smtp {
     private static void setFilePropData() {
         EMAIL = Security.descifrarTexto("Codorniz", "EMAIL");
         PASSWORD = Security.descifrarTexto("Codorniz", "PASSWORD");
-        //EMAIL = "nocturnatartanga@gmail.com";
-        //PASSWORD = "thhi lskx wkwe cnsm";
     }
 }
