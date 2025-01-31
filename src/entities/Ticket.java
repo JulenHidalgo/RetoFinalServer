@@ -74,14 +74,14 @@ public class Ticket implements Serializable {
     @ManyToOne
     private User user;
 
-    public Ticket(String dniComprador, String dniAsistentes, Double importeCompra, Integer cantidad, FormaPago formapago) {
+    /**public Ticket(String dniComprador, String dniAsistentes, Double importeCompra, Integer cantidad, FormaPago formapago) {
         this.dniComprador = dniComprador;
         this.dniAsistentes = dniAsistentes;
         this.importeCompra = importeCompra;
         this.fechaCompra = valueOf(LocalDate.now());
         this.cantidad = cantidad;
         this.formapago = formapago;
-    }
+    }*/
 
     public Ticket() {
     }

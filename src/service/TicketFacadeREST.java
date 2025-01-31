@@ -127,17 +127,15 @@ public class TicketFacadeREST extends AbstractFacade<Ticket> {
      @GET
     @Path("findTicketByUser/{dni}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Ticket> findTicketByUser(@PathParam("dni") String dni) throws NotFoundException {
+    public List<Ticket> findTicketByUser(@PathParam("dni") String dni) {
         List<Ticket> tickets = null;
-        try {
-           
-            tickets = em.createNamedQuery("findTicketByUser").
-                    setParameter("dni", dni).getResultList();
-            if (tickets == null || tickets.isEmpty()) {
-                throw new NotFoundException("El usuario con dni : " + dni+" no tiene ninguna entrada");
-            }
-        } catch(NotFoundException e){
-            throw new NotFoundException("El usuario con dni : " + dni+" no tiene ninguna entrada");
+        try {           
+            
+            tickets = em.createNamedQuery("findTicketByUser").setParameter("dni", dni).getResultList();
+            
+        } catch(javax.ws.rs.NotFoundException e){
+           log.log(Level.INFO, "TicketRESTful service: NotFoundException reading artist/artistsNotByEvent/{0}", dni);
+           throw new javax.ws.rs.NotFoundException(e);
         }catch (Exception ex) {
             
 
