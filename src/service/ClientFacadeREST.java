@@ -7,6 +7,7 @@ package service;
 
 import entities.Client;
 import entities.User;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,7 +56,7 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
         try{
             try{
                 query=em.createNamedQuery("getUserByEmail");
-                query.setParameter("mail", entity.getMail());
+                query.setParameter("mail", Security.desencriptarContraseña(entity.getMail()));
                 user=(User) query.getSingleResult();
                 emailExists = true;
             } catch (NoResultException ex) {
@@ -70,10 +71,10 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
             throw new NotAcceptableException();
         } catch (NoResultException e) {
             try{
-                log.log(Level.SEVERE, entity.getPasswd());
-                log.log(Level.SEVERE, Security.hashText(entity.getPasswd()));
                 log.log(Level.SEVERE, entity.getMail());
-                entity.setPasswd(Security.hashText(entity.getPasswd()));
+                log.log(Level.SEVERE, URLDecoder.decode(Security.desencriptarContraseña(entity.getMail()), "UTF-8"));
+                entity.setMail(URLDecoder.decode(Security.desencriptarContraseña(entity.getMail()), "UTF-8"));
+                entity.setPasswd(URLDecoder.decode(Security.hashText(Security.desencriptarContraseña(entity.getPasswd())), "UTF-8"));
                 super.create(entity);
             } catch (Exception ex) {
                 log.log(Level.INFO, "UserRESTful service: Exception logging up .", ex.getMessage());

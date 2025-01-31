@@ -157,8 +157,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", mail);
             query=em.createNamedQuery("login");
-            query.setParameter("mail", mail);
-            query.setParameter("passwd", Security.hashText(passwd));
+            query.setParameter("mail", Security.desencriptarContraseña(mail));
+            query.setParameter("passwd", Security.hashText(Security.desencriptarContraseña(passwd)));
             userRecibir = (User) query.getSingleResult();
             user.setId(userRecibir.getId());
             user.setIsAdmin(userRecibir.getIsAdmin());
