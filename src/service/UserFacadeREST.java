@@ -151,17 +151,18 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("login/{mail}/{passwd}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public User login(@PathParam("mail") String mail, @PathParam("passwd") String passwd) throws NotFoundException {
-        User user=null;
-        User userRET=null;
+        User user = new User();
+        User userRecibir;
         Query query;
         try {
             log.log(Level.INFO,"UserRESTful service: find users by event {0}.", mail);
-            System.out.println(mail);
-            System.out.println(Security.hashText(passwd));
             query=em.createNamedQuery("login");
             query.setParameter("mail", mail);
             query.setParameter("passwd", Security.hashText(passwd));
-            user=(User) query.getSingleResult();
+            userRecibir = (User) query.getSingleResult();
+            user.setId(userRecibir.getId());
+            user.setIsAdmin(userRecibir.getIsAdmin());
+            user.setMail(userRecibir.getMail());
         }catch(NoResultException ex){
             log.log(Level.INFO, "UserRESTful service: Log in failed.", ex.getMessage()); 
             throw new NotFoundException("El email o la contraseña no coinciden");
