@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
         query = "SELECT a FROM Artist a JOIN a.events e WHERE e.idEvent = :idEvent"),
     @NamedQuery(name = "findArtistsNotByEvent",
         query = "SELECT a FROM Artist a LEFT JOIN a.events e WHERE e.idEvent <> :idEvent OR e.idEvent IS NULL"),
+    
 })
 
 @Entity
