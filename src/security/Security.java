@@ -5,12 +5,18 @@
  */
 package security;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -124,5 +130,40 @@ public class Security {
             
         }
         return ret;
+    }
+    
+    public static String desencriptar(String texto) {
+        byte[] decryptedData = null;
+        try {
+            // Cargar la clave privada desde un recurso del classpath
+            byte[] privateKeyBytes;
+            try (InputStream keyInputStream = Security.class.getResourceAsStream("RSA_Private.key");
+                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                if (keyInputStream == null) {
+                    throw new FileNotFoundException("No se encontró el archivo de clave privada.");
+                }
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = keyInputStream.read(buffer)) != -1) {
+                    baos.write(buffer, 0, bytesRead);
+                }
+                privateKeyBytes = baos.toByteArray();
+            }
+
+            // Reconstruir la clave privada
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+            PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
+            
+            byte[] encryptedData = javax.xml.bind.DatatypeConverter.parseBase64Binary(texto);
+            
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCSC1Padding");
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            byte[] ecryptedData = cipher.doFinal(encryptedData);
+            return javax.xml.bind.DatatypeConverter.printBase64Binary(decryptedData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
