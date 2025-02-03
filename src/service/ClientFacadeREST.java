@@ -56,7 +56,7 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
         try{
             try{
                 query=em.createNamedQuery("getUserByEmail");
-                query.setParameter("mail", Security.desencriptarContraseña(entity.getMail()));
+                query.setParameter("mail", Security.desencriptartexto(URLDecoder.decode(entity.getMail(), "UTF-8")));
                 user=(User) query.getSingleResult();
                 emailExists = true;
             } catch (NoResultException ex) {
@@ -71,10 +71,8 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
             throw new NotAcceptableException();
         } catch (NoResultException e) {
             try{
-                log.log(Level.SEVERE, entity.getMail());
-                log.log(Level.SEVERE, URLDecoder.decode(Security.desencriptarContraseña(entity.getMail()), "UTF-8"));
-                entity.setMail(URLDecoder.decode(Security.desencriptarContraseña(entity.getMail()), "UTF-8"));
-                entity.setPasswd(URLDecoder.decode(Security.hashText(Security.desencriptarContraseña(entity.getPasswd())), "UTF-8"));
+                entity.setMail(Security.desencriptartexto(URLDecoder.decode(entity.getMail(), "UTF-8")));
+                entity.setPasswd(Security.hashText(Security.desencriptartexto(URLDecoder.decode(entity.getPasswd(), "UTF-8"))));
                 super.create(entity);
             } catch (Exception ex) {
                 log.log(Level.INFO, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -93,6 +91,8 @@ public class ClientFacadeREST extends AbstractFacade<Client> {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Client entity) {
         try{
+            entity.setMail(Security.desencriptartexto(URLDecoder.decode(entity.getMail(), "UTF-8")));
+            entity.setPasswd(Security.hashText(Security.desencriptartexto(URLDecoder.decode(entity.getPasswd(), "UTF-8"))));
             super.edit(entity);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
