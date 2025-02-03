@@ -31,7 +31,6 @@ import security.PasswordGenerator;
 import security.Security;
 import smtp.Smtp;
 
-
 /**
  *
  * @author 2dam
@@ -43,7 +42,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @PersistenceContext(unitName = "NocturnaServerPU")
     private EntityManager em;
     private static final Logger log = Logger.getLogger(UserFacadeREST.class.getName());
-    
+
     public UserFacadeREST() {
         super(User.class);
     }
@@ -54,13 +53,13 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public void create(User entity) {
         Query query;
         User user;
-        try{
-            query=em.createNamedQuery("getUserByEmail");
+        try {
+            query = em.createNamedQuery("getUserByEmail");
             query.setParameter("mail", entity.getMail());
-            user=(User) query.getSingleResult();
+            user = (User) query.getSingleResult();
             throw new NotAcceptableException();
         } catch (NoResultException e) {
-            try{
+            try {
                 log.log(Level.SEVERE, entity.getPasswd());
                 log.log(Level.SEVERE, Security.hashText(entity.getPasswd()));
                 entity.setPasswd(Security.hashText(entity.getPasswd()));
@@ -81,7 +80,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, User entity) {
-        try{
+        try {
             super.edit(entity);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -92,7 +91,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        try{
+        try {
             super.remove(super.find(id));
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -104,7 +103,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public User find(@PathParam("id") Long id) {
-        try{
+        try {
             return super.find(id);
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -116,7 +115,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<User> findAll() {
-        try{
+        try {
             return super.findAll();
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -128,7 +127,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<User> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        try{
+        try {
             return super.findRange(new int[]{from, to});
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
@@ -140,14 +139,14 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        try{
+        try {
             return String.valueOf(super.count());
         } catch (Exception ex) {
             log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
     }
-    
+
     @GET
     @Path("login/{mail}/{passwd}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -157,15 +156,15 @@ public class UserFacadeREST extends AbstractFacade<User> {
         Query query;
         try {
             log.log(Level.INFO, mail);
-            query=em.createNamedQuery("login");
+            query = em.createNamedQuery("login");
             query.setParameter("mail", Security.desencriptartexto(mail));
             query.setParameter("passwd", Security.hashText(Security.desencriptartexto(passwd)));
             userRecibir = (User) query.getSingleResult();
             user.setId(userRecibir.getId());
             user.setIsAdmin(userRecibir.getIsAdmin());
             user.setMail(userRecibir.getMail());
-        }catch(NoResultException ex){
-            log.log(Level.INFO, "UserRESTful service: Log in failed.", ex.getMessage()); 
+        } catch (NoResultException ex) {
+            log.log(Level.INFO, "UserRESTful service: Log in failed.", ex.getMessage());
             throw new NotFoundException("El email o la contraseña no coinciden");
         } catch (Exception ex) {
             log.log(Level.SEVERE,
@@ -175,36 +174,41 @@ public class UserFacadeREST extends AbstractFacade<User> {
         }
         return user;
     }
-    
+
     @PUT
-    @Path("updatePasswd/{newPasswd}")
+    @Path("updatePasswd")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void updatePasswd(@PathParam("newPasswd") String newPasswd, User user)  throws NotFoundException {
-         Query query;
-         String subject, text;
+    public void updatePasswd(User user) throws NotFoundException {
         try {
-            log.log(Level.INFO, "UserRESTful service: updating password for {0}.", user.getMail());
-            user.setPasswd(Security.hashText(newPasswd));
+            log.log(Level.INFO, "Actualizando contraseña para: {0}", user.getMail());
+
+            // Desencripta y hashea la contraseña
+            String decryptedPasswd = Security.desencriptartexto(user.getPasswd());
+            user.setPasswd(Security.hashText(decryptedPasswd));
+
+            // Actualiza el usuario en la base de datos
             super.edit(user);
-            subject = "Solicitud de cambio de contraseña";
-            text = "El cambio de contraseña solicitado ha sido un exito";
+
+            // Envía correo de confirmación
+            String subject = "Contraseña actualizada";
+            String text = "¡Tu contraseña se ha actualizado con éxito!";
             Smtp.sendEmail(user.getMail(), subject, text);
+
         } catch (NoResultException ex) {
-            log.log(Level.SEVERE, "UserRESTful service: No user found.", ex.getMessage());
-            throw new NotFoundException("El correo no coincide con ningun usuario");
+            log.log(Level.SEVERE, "Usuario no encontrado: {0}", ex.getMessage());
+            throw new NotFoundException("Usuario no registrado");
         } catch (Exception ex) {
-            log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
+            log.log(Level.SEVERE, "Error interno: {0}", ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
     }
- 
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
-    
+
     @GET
     @Path("resetPassword/{userEmail}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -215,9 +219,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
         String pass;
         String subject, text;
         try {
-            query=em.createNamedQuery("getUserByEmail");
+            query = em.createNamedQuery("getUserByEmail");
             query.setParameter("mail", userEmail);
-            user=(User) query.getSingleResult();
+            user = (User) query.getSingleResult();
             log.log(Level.INFO, "UserRESTful service: reseting password for {0}.", userEmail);
             pass = PasswordGenerator.getPassword();
             user.setPasswd(Security.hashText(pass));
@@ -233,5 +237,5 @@ public class UserFacadeREST extends AbstractFacade<User> {
             throw new InternalServerErrorException(ex);
         }
     }
-    
+
 }
