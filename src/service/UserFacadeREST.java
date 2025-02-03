@@ -5,6 +5,7 @@
  */
 package service;
 
+import entities.Client;
 import entities.User;
 import java.net.URLDecoder;
 import java.util.List;
@@ -176,16 +177,18 @@ public class UserFacadeREST extends AbstractFacade<User> {
     }
 
     @PUT
-    @Path("updatePasswd")
+    @Path("updatePasswd/{mail}/{oldPasswd}/{newPasswd}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void updatePasswd(User user) throws NotFoundException {
+    public void updatePasswd(@PathParam("mail") String mail, @PathParam("oldPasswd") String oldPasswd, @PathParam("newPasswd") String newPasswd) throws NotFoundException {
         try {
-            log.log(Level.INFO, "Actualizando contraseña para: {0}", user.getMail());
-
-            // Desencripta y hashea la contraseña
-            String decryptedPasswd = Security.desencriptartexto(user.getPasswd());
-            user.setPasswd(Security.hashText(decryptedPasswd));
+            User user;
+            
+            log.log(Level.INFO, "Actualizando contraseña para: {0}", mail);
+            
+            user = login(mail, oldPasswd);
+            
+            user.setPasswd(Security.hashText(Security.desencriptartexto(newPasswd)));
 
             // Actualiza el usuario en la base de datos
             super.edit(user);
