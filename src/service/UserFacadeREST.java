@@ -6,6 +6,7 @@
 package service;
 
 import entities.User;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -155,10 +156,10 @@ public class UserFacadeREST extends AbstractFacade<User> {
         User userRecibir;
         Query query;
         try {
-            log.log(Level.INFO,"UserRESTful service: find users by event {0}.", mail);
+            log.log(Level.INFO, mail);
             query=em.createNamedQuery("login");
-            query.setParameter("mail", mail);
-            query.setParameter("passwd", Security.hashText(passwd));
+            query.setParameter("mail", Security.desencriptartexto(mail));
+            query.setParameter("passwd", Security.hashText(Security.desencriptartexto(passwd)));
             userRecibir = (User) query.getSingleResult();
             user.setId(userRecibir.getId());
             user.setIsAdmin(userRecibir.getIsAdmin());

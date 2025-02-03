@@ -88,7 +88,7 @@ public class Security {
             }
 
         } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e) {
-            
+            log.log(Level.SEVERE, "Problem in cipher proccess", e.getMessage());
         }
         return hexStringBuilder.toString();
     }
@@ -127,18 +127,18 @@ public class Security {
             byte[] decodedMessage = cipher.doFinal(Arrays.copyOfRange(fileContent, 16, fileContent.length));
             ret = new String(decodedMessage);
         } catch (InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e) {
-            
+            log.log(Level.SEVERE, "Problem in decipher proccess", e.getMessage());
         }
         return ret;
     }
     
-    public static String desencriptar(String texto) {
-        byte[] decryptedData = null;
+    public static String desencriptartexto(String texto) {
         try {
-            // Cargar la clave privada desde un recurso del classpath
+
+            // Cargar la clave privada desde un archivo
             byte[] privateKeyBytes;
             try (InputStream keyInputStream = Security.class.getResourceAsStream("RSA_Private.key");
-                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 if (keyInputStream == null) {
                     throw new FileNotFoundException("No se encontró el archivo de clave privada.");
                 }
@@ -154,15 +154,20 @@ public class Security {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
             PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
-            
+
+            // Convertir la contraseña cifrada de Base64 a bytes
             byte[] encryptedData = javax.xml.bind.DatatypeConverter.parseBase64Binary(texto);
-            
-            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCSC1Padding");
+
+            // Usar RSA/ECB/PKCS1Padding (asegúrate de que esto es consistente con el cifrado)
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            byte[] ecryptedData = cipher.doFinal(encryptedData);
-            return javax.xml.bind.DatatypeConverter.printBase64Binary(decryptedData);
+            byte[] textoDesencriptado = cipher.doFinal(encryptedData);
+
+            // Convertir los datos descifrados a String
+            return new String(textoDesencriptado);
+
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Problem in decrypt proccess", e.getMessage());
             return null;
         }
     }
