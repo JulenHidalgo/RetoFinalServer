@@ -177,26 +177,30 @@ public class UserFacadeREST extends AbstractFacade<User> {
     }
 
     @PUT
-    @Path("updatePasswd/{mail}/{oldPasswd}/{newPasswd}")
+    @Path("updatePasswd/{newPasswd}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void updatePasswd(@PathParam("mail") String mail, @PathParam("oldPasswd") String oldPasswd, @PathParam("newPasswd") String newPasswd) throws NotFoundException {
+    public void updatePasswd(@PathParam("newPasswd") String newPasswd, User user) throws NotFoundException {
+        User userLogin;
         try {
-            User user;
-            
-            log.log(Level.INFO, "Actualizando contraseña para: {0}", mail);
-            
-            user = login(mail, oldPasswd);
-            
-            user.setPasswd(Security.hashText(Security.desencriptartexto(newPasswd)));
 
+            userLogin = login(URLDecoder.decode(user.getMail(), "UTF-8"), URLDecoder.decode(user.getPasswd(), "UTF-8"));
+
+            log.log(Level.INFO, "Actualizando contraseña para: {0}", user.getMail());
+
+            userLogin.setPasswd(Security.hashText(Security.desencriptartexto(newPasswd)));
+            log.log(Level.SEVERE, user.getPasswd());
+            log.log(Level.SEVERE, Security.desencriptartexto(newPasswd));
+            log.log(Level.SEVERE, userLogin.getMail());
+            log.log(Level.SEVERE, userLogin.getId().toString());
+            log.log(Level.SEVERE, userLogin.getIsAdmin().toString());
             // Actualiza el usuario en la base de datos
             super.edit(user);
 
             // Envía correo de confirmación
             String subject = "Contraseña actualizada";
             String text = "¡Tu contraseña se ha actualizado con éxito!";
-            Smtp.sendEmail(user.getMail(), subject, text);
+            Smtp.sendEmail(userLogin.getMail(), subject, text);
 
         } catch (NoResultException ex) {
             log.log(Level.SEVERE, "Usuario no encontrado: {0}", ex.getMessage());
@@ -205,11 +209,6 @@ public class UserFacadeREST extends AbstractFacade<User> {
             log.log(Level.SEVERE, "Error interno: {0}", ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
-    }
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
     }
 
     @GET
@@ -239,6 +238,11 @@ public class UserFacadeREST extends AbstractFacade<User> {
             log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
+    }
+
+    @Override
+    protected EntityManager getEntityManager() {
+        return em;
     }
 
 }
