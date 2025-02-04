@@ -177,17 +177,16 @@ public class UserFacadeREST extends AbstractFacade<User> {
     }
 
     @PUT
-    @Path("updatePasswd/{mail}/{oldPasswd}/{newPasswd}")
+    @Path("updatePasswd/{newPasswd}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void updatePasswd(@PathParam("mail") String mail, @PathParam("oldPasswd") String oldPasswd, @PathParam("newPasswd") String newPasswd) throws NotFoundException {
+    public void updatePasswd(@PathParam("newPasswd") String newPasswd, User user) throws NotFoundException {
         try {
-            User user;
-            
-            log.log(Level.INFO, "Actualizando contraseña para: {0}", mail);
-            
-            user = login(mail, oldPasswd);
-            
+
+            user = login(user.getMail(), URLDecoder.decode(user.getPasswd(), "UTF-8"));
+
+            log.log(Level.INFO, "Actualizando contraseña para: {0}", user.getMail());
+
             user.setPasswd(Security.hashText(Security.desencriptartexto(newPasswd)));
 
             // Actualiza el usuario en la base de datos
@@ -205,11 +204,6 @@ public class UserFacadeREST extends AbstractFacade<User> {
             log.log(Level.SEVERE, "Error interno: {0}", ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
-    }
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
     }
 
     @GET
@@ -239,6 +233,11 @@ public class UserFacadeREST extends AbstractFacade<User> {
             log.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
             throw new InternalServerErrorException(ex);
         }
+    }
+
+    @Override
+    protected EntityManager getEntityManager() {
+        return em;
     }
 
 }
