@@ -7,6 +7,7 @@ package service;
 
 import entities.Admin;
 import entities.User;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,7 +16,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -53,12 +53,13 @@ public class AdminFacadeREST extends AbstractFacade<Admin> {
         User user;
         try{
             query=em.createNamedQuery("getUserByEmail");
-            query.setParameter("mail", entity.getMail());
+            query.setParameter("mail", Security.desencriptartexto(URLDecoder.decode(entity.getMail(), "UTF-8")));
             user=(User) query.getSingleResult();
             throw new NotAcceptableException();
         } catch (NoResultException e) {
             try{
-                entity.setPasswd(Security.hashText(entity.getPasswd()));
+                entity.setMail(Security.desencriptartexto(URLDecoder.decode(entity.getMail(), "UTF-8")));
+                entity.setPasswd(Security.hashText(Security.desencriptartexto(URLDecoder.decode(entity.getPasswd(), "UTF-8"))));
                 super.create(entity);
             } catch (Exception ex) {
                 log.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
