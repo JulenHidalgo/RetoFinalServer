@@ -182,9 +182,13 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void updatePasswd(@PathParam("newPasswd") String newPasswd, User user) throws NotFoundException {
         User userLogin;
+        Query query;
         try {
-
-            userLogin = login(URLDecoder.decode(user.getMail(), "UTF-8"), URLDecoder.decode(user.getPasswd(), "UTF-8"));
+            query = em.createNamedQuery("login");
+            query.setParameter("mail", user.getMail());
+            query.setParameter("passwd", Security.hashText(Security.desencriptartexto(URLDecoder.decode(user.getPasswd(), "UTF-8"))));
+            userLogin = (User) query.getSingleResult();
+            //userLogin = login(URLDecoder.decode(user.getMail(), "UTF-8"), URLDecoder.decode(user.getPasswd(), "UTF-8"));
 
             log.log(Level.INFO, "Actualizando contraseña para: {0}", user.getMail());
 
